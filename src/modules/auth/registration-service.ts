@@ -5,6 +5,7 @@ import { recordAuditEvent } from "./audit";
 import { ConflictError, ValidationError } from "./errors";
 import { hashPassword } from "./password";
 import { registerSchema } from "./registration-schema";
+import { issueVerificationTokenAndSendEmail } from "./verification-service";
 
 export interface RegisterContext {
   ipAddress?: string | null;
@@ -75,6 +76,12 @@ export async function registerStudent(
       ipAddress: context.ipAddress ?? null,
       userAgent: context.userAgent ?? null,
       metadata: { role: "STUDENT" },
+    });
+
+    await issueVerificationTokenAndSendEmail({
+      userId: created.id,
+      email: created.email,
+      name: created.name,
     });
 
     return {

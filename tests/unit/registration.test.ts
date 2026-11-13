@@ -18,6 +18,10 @@ vi.mock("@/server/db", () => ({
   }),
 }));
 
+vi.mock("@/modules/auth/verification-service", () => ({
+  issueVerificationTokenAndSendEmail: vi.fn().mockResolvedValue(undefined),
+}));
+
 import { POST } from "@/app/api/auth/register/route";
 import { ConflictError, ValidationError } from "@/modules/auth/errors";
 import { registerStudent } from "@/modules/auth/registration-service";

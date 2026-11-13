@@ -45,3 +45,12 @@ Stack Varsity uses a **hybrid encrypted-JWT + server-persisted PostgreSQL `Sessi
 - **Validation**: `registerSchema` (Zod `.strict()`) enforces required fields, normalized lowercase email (`<= 254` chars), full name (`2..100` chars), strong password policy (`10..128` chars with uppercase, lowercase, digit, and symbol), and password confirmation.
 - **Privilege Protection**: `.strict()` rejects any client-supplied `role`, `status`, `emailVerified`, `mfaEnabled`, or `permissions` fields. `registerStudent()` explicitly persists `role: "STUDENT"`, `status: "ACTIVE"`, and `emailVerified: null`.
 - **Concurrency & Rate Limiting**: Duplicate emails (including concurrent `P2002` races) return `409 Conflict`. `POST /api/auth/register` applies IP-based rate limiting (5 attempts per 15 minutes in the local limiter; distributed Redis/PostgreSQL store required for multi-instance production).
+
+---
+
+## 6. Email Verification (`/verify-email`, `/api/auth/verify-email`, `/api/auth/resend-verification`)
+
+- **Token Storage**: `EmailVerificationToken` stores only the SHA-256 `tokenHash` of a 32-byte cryptographically random token (24-hour TTL). Raw tokens are never stored or logged.
+- **Atomic Single-Use Consumption**: Verification uses an atomic `updateMany` (`consumedAt: null` and `expiresAt > now`) inside `db.$transaction` so concurrent requests cannot replay a token.
+- **Anti-Enumeration & Rate Limiting**: `POST /api/auth/resend-verification` always returns a generic `200 OK` message regardless of account existence and is rate-limited (3 requests per 15 minutes per IP).
+- **Email Delivery**: `src/server/mail.ts` dispatches via `EMAIL_PROVIDER_API_KEY` when configured and falls back to safe server-only local capture in development/test.
