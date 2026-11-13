@@ -54,3 +54,12 @@ Stack Varsity uses a **hybrid encrypted-JWT + server-persisted PostgreSQL `Sessi
 - **Atomic Single-Use Consumption**: Verification uses an atomic `updateMany` (`consumedAt: null` and `expiresAt > now`) inside `db.$transaction` so concurrent requests cannot replay a token.
 - **Anti-Enumeration & Rate Limiting**: `POST /api/auth/resend-verification` always returns a generic `200 OK` message regardless of account existence and is rate-limited (3 requests per 15 minutes per IP).
 - **Email Delivery**: `src/server/mail.ts` dispatches via `EMAIL_PROVIDER_API_KEY` when configured and falls back to safe server-only local capture in development/test.
+
+---
+
+## 7. Login, Logout & Session Lifecycle (`/login`, `/api/auth/login`, `/api/auth/logout`)
+
+- **Rate Limiting & Generic Errors**: `POST /api/auth/login` limits attempts (10 per 15 minutes per IP+email) and always returns a generic `"Invalid email or password."` error on failure.
+- **Remember-Session Support**: Standard sessions use a 12-hour server-side TTL; opting into "Keep me signed in" extends the server-side TTL to 7 days.
+- **Open-Redirect Protection**: `sanitizeRedirectPath()` rejects external URLs, protocol-relative URLs (`//`), and scheme-prefixed paths.
+- **Logout**: `POST /api/auth/logout` deletes the PostgreSQL `Session` row and clears the Auth.js session cookie.
