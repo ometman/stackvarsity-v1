@@ -18,18 +18,18 @@ All core TypeScript, ESLint, unit/component/integration tests, Prisma validation
 
 Phase 1 steps were implemented on dedicated branches off `development` (and stacked where dependent):
 
-| Step | Scope | Branch | Commit | Status |
-|---|---|---|---|---|
-| **1.1** | Next.js App Router Bootstrap | `development` | `f479958` | Merged on `development` |
-| **1.2** | Modular Application Structure & `PROJECT_STRUCTURE.md` | `docs/project-structure` | `f002a38` | Pushed; PR pending |
-| **1.3** | Prettier, `.editorconfig`, `.nvmrc`, Quality Scripts | `chore/code-quality-tooling` | `07dba5b` | Pushed; PR pending |
-| **1.4** | Tailwind CSS v4, shadcn/ui, Lucide Icons, `/dev/ui` | `feat/ui-foundation` | `0195626` | Pushed; PR pending |
-| **1.5** | Branding, Design Tokens, Themes, Metadata | `feat/design-system` | `6bc1c26` | Pushed; PR pending |
-| **1.6** | Zod Env Validation, `.env.example`, `src/config/*` | `feat/env-config` | `45c14a8` | Pushed; PR pending |
-| **1.7** | PostgreSQL, Prisma 7, Docker Compose, `src/server/db.ts` | `feat/database-prisma` | `31ed1f4` | Pushed; PR pending |
-| **1.8** | Vitest, RTL, V8 Coverage, Playwright Smoke Setup | `feat/testing-infra` | `2d52935` | Pushed; PR pending |
-| **1.9** | `/api/health`, `/api/ready`, `src/server/logger.ts` | `feat/health-checks` | `bb21fb1` | Pushed; PR pending |
-| **1.10** | Foundation Validation & Review | `feat/health-checks` | Local report | Complete |
+| Step     | Scope                                                    | Branch                       | Commit       | Status                  |
+| -------- | -------------------------------------------------------- | ---------------------------- | ------------ | ----------------------- |
+| **1.1**  | Next.js App Router Bootstrap                             | `development`                | `f479958`    | Merged on `development` |
+| **1.2**  | Modular Application Structure & `PROJECT_STRUCTURE.md`   | `docs/project-structure`     | `f002a38`    | Pushed; PR pending      |
+| **1.3**  | Prettier, `.editorconfig`, `.nvmrc`, Quality Scripts     | `chore/code-quality-tooling` | `07dba5b`    | Pushed; PR pending      |
+| **1.4**  | Tailwind CSS v4, shadcn/ui, Lucide Icons, `/dev/ui`      | `feat/ui-foundation`         | `0195626`    | Pushed; PR pending      |
+| **1.5**  | Branding, Design Tokens, Themes, Metadata                | `feat/design-system`         | `6bc1c26`    | Pushed; PR pending      |
+| **1.6**  | Zod Env Validation, `.env.example`, `src/config/*`       | `feat/env-config`            | `45c14a8`    | Pushed; PR pending      |
+| **1.7**  | PostgreSQL, Prisma 7, Docker Compose, `src/server/db.ts` | `feat/database-prisma`       | `31ed1f4`    | Pushed; PR pending      |
+| **1.8**  | Vitest, RTL, V8 Coverage, Playwright Smoke Setup         | `feat/testing-infra`         | `2d52935`    | Pushed; PR pending      |
+| **1.9**  | `/api/health`, `/api/ready`, `src/server/logger.ts`      | `feat/health-checks`         | `bb21fb1`    | Pushed; PR pending      |
+| **1.10** | Foundation Validation & Review                           | `feat/health-checks`         | Local report | Complete                |
 
 ---
 
@@ -57,15 +57,15 @@ Phase 1 steps were implemented on dedicated branches off `development` (and stac
 
 Executed on `feat/health-checks`:
 
-| Check | Command | Outcome | Notes |
-|---|---|---|---|
-| **TypeScript** | `npx tsc --noEmit` | **Passed** (`EXIT:0`) | Strict mode enabled (`npm run typecheck` is on `chore/code-quality-tooling`) |
-| **ESLint** | `npm run lint` | **Passed** (`EXIT:0`) | 0 errors, 0 warnings |
-| **Prettier** | `npx prettier --check .` | **Failed** (`EXIT:1`) | 20 files unformatted; `.prettierrc.json` & `format` script are on unmerged `chore/code-quality-tooling` |
-| **Production Build** | `npm run build` | **Passed** (`EXIT:0`) | Built `/`, `/_not-found`, `/api/health`, `/api/ready` |
-| **Prisma Validate** | `npm run db:validate` | **Passed** (`EXIT:0`) | `prisma/schema.prisma` valid |
-| **Prisma Migrate Status** | `npm run db:migrate:status` | **Pending** (`EXIT:1`) | PostgreSQL reachable at `localhost:5432` (`stackvarsitydb`), but `prisma/migrations` has no initial migration yet |
-| **Live Health Endpoints** | `GET /api/health`, `GET /api/ready` | **Passed** | Both returned HTTP `200` with `{ status: "ok", service: "stackvarsity", timestamp }` |
+| Check                     | Command                             | Outcome                | Notes                                                                                                             |
+| ------------------------- | ----------------------------------- | ---------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **TypeScript**            | `npx tsc --noEmit`                  | **Passed** (`EXIT:0`)  | Strict mode enabled (`npm run typecheck` is on `chore/code-quality-tooling`)                                      |
+| **ESLint**                | `npm run lint`                      | **Passed** (`EXIT:0`)  | 0 errors, 0 warnings                                                                                              |
+| **Prettier**              | `npx prettier --check .`            | **Failed** (`EXIT:1`)  | 20 files unformatted; `.prettierrc.json` & `format` script are on unmerged `chore/code-quality-tooling`           |
+| **Production Build**      | `npm run build`                     | **Passed** (`EXIT:0`)  | Built `/`, `/_not-found`, `/api/health`, `/api/ready`                                                             |
+| **Prisma Validate**       | `npm run db:validate`               | **Passed** (`EXIT:0`)  | `prisma/schema.prisma` valid                                                                                      |
+| **Prisma Migrate Status** | `npm run db:migrate:status`         | **Pending** (`EXIT:1`) | PostgreSQL reachable at `localhost:5432` (`stackvarsitydb`), but `prisma/migrations` has no initial migration yet |
+| **Live Health Endpoints** | `GET /api/health`, `GET /api/ready` | **Passed**             | Both returned HTTP `200` with `{ status: "ok", service: "stackvarsity", timestamp }`                              |
 
 ---
 
@@ -85,30 +85,30 @@ Executed on `feat/health-checks`:
 
 ## 7. Security Audit
 
-| Severity | Finding | Classification | Status / Mitigation |
-|---|---|---|---|
-| **Moderate** | 7 moderate `minimatch` ReDoS advisories via `@typescript-eslint/*` (`npm audit`) | Dev-dependency risk | Affects ESLint build tooling only, not production runtime; monitor upstream `eslint-config-next` updates |
-| **Low** | No `.github/workflows` CI or secret scanning workflow configured yet | Configuration gap | Planned for Phase 2 / CI setup |
-| **Informational** | `.env` present locally | Verified safe | Ignored by `.gitignore`; not tracked in Git (`git ls-files` confirmed only `.env.example` tracked) |
-| **Informational** | Health/readiness payloads & server boundaries | Verified safe | `/api/health` and `/api/ready` return no credentials or stack traces; `server-only` guards server modules |
+| Severity          | Finding                                                                          | Classification      | Status / Mitigation                                                                                       |
+| ----------------- | -------------------------------------------------------------------------------- | ------------------- | --------------------------------------------------------------------------------------------------------- |
+| **Moderate**      | 7 moderate `minimatch` ReDoS advisories via `@typescript-eslint/*` (`npm audit`) | Dev-dependency risk | Affects ESLint build tooling only, not production runtime; monitor upstream `eslint-config-next` updates  |
+| **Low**           | No `.github/workflows` CI or secret scanning workflow configured yet             | Configuration gap   | Planned for Phase 2 / CI setup                                                                            |
+| **Informational** | `.env` present locally                                                           | Verified safe       | Ignored by `.gitignore`; not tracked in Git (`git ls-files` confirmed only `.env.example` tracked)        |
+| **Informational** | Health/readiness payloads & server boundaries                                    | Verified safe       | `/api/health` and `/api/ready` return no credentials or stack traces; `server-only` guards server modules |
 
 ---
 
 ## 8. Documentation Audit
 
-| Document | Status | Location |
-|---|---|---|
-| `README.md` | Present (starter) | Repo root |
-| `docs/MASTER_PLAN.md` | Present (contains legacy monorepo blueprint notes) | `development` |
-| `docs/MASTER_INSTRUCTIONS.md` | Present | `development` |
-| `docs/architecture/PROJECT_STRUCTURE.md` | Present on `docs/project-structure` | Pending PR merge |
-| `docs/architecture/UI_COMPONENTS.md` | Present on `feat/ui-foundation` | Pending PR merge |
-| `docs/architecture/DESIGN_SYSTEM.md` | Present on `feat/design-system` | Pending PR merge |
-| `docs/architecture/ENVIRONMENT_CONFIGURATION.md` | Present on `feat/env-config` & descendants | Present |
-| `docs/architecture/DATABASE.md` | Present on `feat/database-prisma` & descendants | Present |
-| `docs/architecture/TESTING_STRATEGY.md` | Present on `feat/testing-infra` & descendants | Present |
-| `docs/architecture/HEALTH_CHECKS.md` | Present on `feat/health-checks` | Present |
-| `docs/architecture/CODING_STANDARDS.md` | **Missing** | To be created after PR consolidation |
+| Document                                         | Status                                             | Location                             |
+| ------------------------------------------------ | -------------------------------------------------- | ------------------------------------ |
+| `README.md`                                      | Present (starter)                                  | Repo root                            |
+| `docs/MASTER_PLAN.md`                            | Present (contains legacy monorepo blueprint notes) | `development`                        |
+| `docs/MASTER_INSTRUCTIONS.md`                    | Present                                            | `development`                        |
+| `docs/architecture/PROJECT_STRUCTURE.md`         | Present on `docs/project-structure`                | Pending PR merge                     |
+| `docs/architecture/UI_COMPONENTS.md`             | Present on `feat/ui-foundation`                    | Pending PR merge                     |
+| `docs/architecture/DESIGN_SYSTEM.md`             | Present on `feat/design-system`                    | Pending PR merge                     |
+| `docs/architecture/ENVIRONMENT_CONFIGURATION.md` | Present on `feat/env-config` & descendants         | Present                              |
+| `docs/architecture/DATABASE.md`                  | Present on `feat/database-prisma` & descendants    | Present                              |
+| `docs/architecture/TESTING_STRATEGY.md`          | Present on `feat/testing-infra` & descendants      | Present                              |
+| `docs/architecture/HEALTH_CHECKS.md`             | Present on `feat/health-checks`                    | Present                              |
+| `docs/architecture/CODING_STANDARDS.md`          | **Missing**                                        | To be created after PR consolidation |
 
 ---
 

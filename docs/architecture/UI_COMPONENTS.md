@@ -30,11 +30,11 @@ Initialized via `npx shadcn@latest init` in [components.json](../../components.j
 
 ## Component Organization
 
-| Directory | Responsibility |
-|---|---|
-| `src/components/ui/` | Low-level shadcn/ui primitives (`button.tsx`, `card.tsx`, `input.tsx`, `label.tsx`, `separator.tsx`, `badge.tsx`). |
-| `src/components/shared/` | Application-wide composite components composed from `ui/` primitives. |
-| `src/components/layout/` | Shell components (headers, navigation bars, sidebars, footers). |
+| Directory                | Responsibility                                                                                                     |
+| ------------------------ | ------------------------------------------------------------------------------------------------------------------ |
+| `src/components/ui/`     | Low-level shadcn/ui primitives (`button.tsx`, `card.tsx`, `input.tsx`, `label.tsx`, `separator.tsx`, `badge.tsx`). |
+| `src/components/shared/` | Application-wide composite components composed from `ui/` primitives.                                              |
+| `src/components/layout/` | Shell components (headers, navigation bars, sidebars, footers).                                                    |
 
 ### Installed Primitives
 
