@@ -48,10 +48,10 @@ The initial business has **two primary educational pillars**:
 
 ### 2.1 Repository policy
 
-| Repository | Purpose | Policy |
-|---|---|---|
+| Repository                | Purpose                         | Policy                                                                         |
+| ------------------------- | ------------------------------- | ------------------------------------------------------------------------------ |
 | `ometman/stackvarsity-v1` | **Canonical V1 implementation** | All new V1 feature work, issues, pull requests, release tags and documentation |
-| `ometman/stackvarsity` | Legacy reference | Audit/read and selectively port verified modules; do not merge wholesale |
+| `ometman/stackvarsity`    | Legacy reference                | Audit/read and selectively port verified modules; do not merge wholesale       |
 
 Use a clean V1 history. Maintain attribution and applicable licenses for any reused legacy or third-party code. Before importing old material, scan it for secrets, vulnerabilities, obsolete dependencies, unlicensed assets, and legacy business assumptions. Never copy production `.env`, database dumps, credentials, or personal information into Git.
 
@@ -104,7 +104,7 @@ Classify each module **Retain / Refactor / Replace / Retire / Build New**. Produ
 - **REST API** at `/api/v1`, described by OpenAPI; shared schema contracts.
 - Server-side data access; frontend never connects directly to PostgreSQL.
 - **Local-first** with Docker Compose or documented equivalent; production infrastructure is deployment-agnostic until approved.
-- Choose **one** ORM/query layer (Prisma *or* a suitably proven existing SQL layer) after audit; avoid parallel migration systems.
+- Choose **one** ORM/query layer (Prisma _or_ a suitably proven existing SQL layer) after audit; avoid parallel migration systems.
 - Prefer secure, **HttpOnly, Secure, SameSite** browser sessions. If JWTs are necessary, rotate and revoke refresh credentials; do not store persistent sensitive tokens in `localStorage`.
 - Separate long-running work (email, report preparation, document generation, notifications) into durable background jobs, initially backed by PostgreSQL if practical.
 
@@ -207,27 +207,27 @@ Primary public navigation: **Home, Courses, Certifications, Learning Paths, Prac
 
 ### 4.3 Public routes and functional acceptance
 
-| Page / route | Key content and functionality |
-|---|---|
-| `/` | Hero, value proposition, program pillars, featured courses and certifications, how it works, trust signals, clear CTAs |
-| `/courses` | Search, category/difficulty/free-paid filters, pagination, course cards |
-| `/courses/[slug]` | Objectives, syllabus, instructor, prerequisites, length, access terms, price, enrollment |
-| `/certifications` | Provider/topic directory, current exam-prep offerings, search and filters |
-| `/certifications/[slug]` | Exam version/date, domains, study path, mock exams, disclaimers, official source reference |
-| `/learning-paths` | Curated multi-course paths |
-| `/learning-paths/[slug]` | Ordered curriculum, intended outcomes, enrollment |
-| `/practice-exams` | Discover assessment packages, format, access requirements |
-| `/pricing` | Actual published plans, course purchases, refund terms, GHS pricing |
-| `/about` | Mission, team/company information, educational model |
-| `/contact` | Form with abuse controls; show `hello@mystackvarsity.com` |
-| `/faq` | Enrollment, payment, exam-prep and support questions |
-| `/privacy` | Data processing, rights, retention, contact |
-| `/terms` | Service and acceptable-use terms |
-| `/refund-policy` | Refund rules aligned with payment contracts and applicable law |
-| `/accessibility` | Accessibility commitments and issue reporting |
-| `/login`, `/register` | Secure account access/creation |
-| `/verify-email`, `/forgot-password`, `/reset-password` | Email validation and safe recovery |
-| `/404`, `/error`, `/maintenance` | Useful fallback states |
+| Page / route                                           | Key content and functionality                                                                                          |
+| ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- |
+| `/`                                                    | Hero, value proposition, program pillars, featured courses and certifications, how it works, trust signals, clear CTAs |
+| `/courses`                                             | Search, category/difficulty/free-paid filters, pagination, course cards                                                |
+| `/courses/[slug]`                                      | Objectives, syllabus, instructor, prerequisites, length, access terms, price, enrollment                               |
+| `/certifications`                                      | Provider/topic directory, current exam-prep offerings, search and filters                                              |
+| `/certifications/[slug]`                               | Exam version/date, domains, study path, mock exams, disclaimers, official source reference                             |
+| `/learning-paths`                                      | Curated multi-course paths                                                                                             |
+| `/learning-paths/[slug]`                               | Ordered curriculum, intended outcomes, enrollment                                                                      |
+| `/practice-exams`                                      | Discover assessment packages, format, access requirements                                                              |
+| `/pricing`                                             | Actual published plans, course purchases, refund terms, GHS pricing                                                    |
+| `/about`                                               | Mission, team/company information, educational model                                                                   |
+| `/contact`                                             | Form with abuse controls; show `hello@mystackvarsity.com`                                                              |
+| `/faq`                                                 | Enrollment, payment, exam-prep and support questions                                                                   |
+| `/privacy`                                             | Data processing, rights, retention, contact                                                                            |
+| `/terms`                                               | Service and acceptable-use terms                                                                                       |
+| `/refund-policy`                                       | Refund rules aligned with payment contracts and applicable law                                                         |
+| `/accessibility`                                       | Accessibility commitments and issue reporting                                                                          |
+| `/login`, `/register`                                  | Secure account access/creation                                                                                         |
+| `/verify-email`, `/forgot-password`, `/reset-password` | Email validation and safe recovery                                                                                     |
+| `/404`, `/error`, `/maintenance`                       | Useful fallback states                                                                                                 |
 
 **SEO:** canonical URLs under `https://www.mystackvarsity.com`, sitemap, robots policy, Open Graph, structured data where applicable, noindex for private/admin pages, metadata per public route. Establish redirects from the apex `mystackvarsity.com` to `www.mystackvarsity.com` (or the reverse only if the canonical domain is later explicitly changed).
 
@@ -237,23 +237,23 @@ Primary public navigation: **Home, Courses, Certifications, Learning Paths, Prac
 
 ### 5.1 Protected learner routes
 
-| Route | Required functionality |
-|---|---|
-| `/dashboard` | Continue learning, active courses, upcoming tasks, latest results, quick actions |
-| `/dashboard/my-courses` | Purchased/enrolled courses and completion status |
-| `/dashboard/learning-paths` | Path progress and next recommended action |
-| `/dashboard/certifications` | Certification tracks, domain coverage and performance |
-| `/dashboard/practice` | Topic quizzes, missed-question review, practice history |
-| `/dashboard/exams` | Available, active and completed mock exams |
-| `/dashboard/results` | Exam history, filters, trend summary |
-| `/dashboard/results/[attemptId]` | Scores, domain breakdown, explanations when released |
-| `/dashboard/progress` | Lesson/course performance, strengths and remediation |
-| `/dashboard/certificates` | Verifiable **Stack Varsity course-completion** credentials |
-| `/dashboard/billing` | Orders, receipts, payments, eligible refunds |
-| `/dashboard/notifications` | Security and course notices |
-| `/dashboard/settings` | Profile, password, active sessions, privacy preferences, account requests |
+| Route                              | Required functionality                                                           |
+| ---------------------------------- | -------------------------------------------------------------------------------- |
+| `/dashboard`                       | Continue learning, active courses, upcoming tasks, latest results, quick actions |
+| `/dashboard/my-courses`            | Purchased/enrolled courses and completion status                                 |
+| `/dashboard/learning-paths`        | Path progress and next recommended action                                        |
+| `/dashboard/certifications`        | Certification tracks, domain coverage and performance                            |
+| `/dashboard/practice`              | Topic quizzes, missed-question review, practice history                          |
+| `/dashboard/exams`                 | Available, active and completed mock exams                                       |
+| `/dashboard/results`               | Exam history, filters, trend summary                                             |
+| `/dashboard/results/[attemptId]`   | Scores, domain breakdown, explanations when released                             |
+| `/dashboard/progress`              | Lesson/course performance, strengths and remediation                             |
+| `/dashboard/certificates`          | Verifiable **Stack Varsity course-completion** credentials                       |
+| `/dashboard/billing`               | Orders, receipts, payments, eligible refunds                                     |
+| `/dashboard/notifications`         | Security and course notices                                                      |
+| `/dashboard/settings`              | Profile, password, active sessions, privacy preferences, account requests        |
 | `/learn/[courseSlug]/[lessonSlug]` | Video/text lesson player, outline, resource downloads, completion, previous/next |
-| `/exam/[attemptId]` | Timed question interface, navigation, autosave, flag/review, submit |
+| `/exam/[attemptId]`                | Timed question interface, navigation, autosave, flag/review, submit              |
 
 ### 5.2 Course player
 
@@ -359,48 +359,48 @@ Cross-cutting: request IDs, structured errors, authentication, authorization, va
 
 ### 8.2 Primary endpoint inventory (target contracts)
 
-| Domain | Method and route | Purpose |
-|---|---|---|
-| Auth | `POST /auth/register` | Create user |
-| Auth | `POST /auth/login` | Authenticate |
-| Auth | `POST /auth/logout` | Revoke current session |
-| Auth | `POST /auth/refresh` | Refresh only if token model used |
-| Auth | `GET /auth/me` | Current account |
-| Auth | `POST /auth/verify-email` | Verify email token |
-| Auth | `POST /auth/forgot-password` | Request reset without leaking account existence |
-| Auth | `POST /auth/reset-password` | Single-use reset |
-| Auth | `GET /auth/sessions` | List sessions |
-| Auth | `DELETE /auth/sessions/:id` | Revoke session |
-| Courses | `GET /courses` | Public published list |
-| Courses | `GET /courses/:slug` | Public course details |
-| Courses | `POST /courses` | Authorized create |
-| Courses | `PATCH /courses/:id` | Authorized update |
-| Courses | `POST /courses/:id/publish` | Reviewed publish |
-| Courses | `GET /courses/:id/modules` | Syllabus |
-| Enrollment | `GET /me/enrollments` | Learner courses |
-| Enrollment | `POST /courses/:id/enroll` | Free or entitlement-backed enrollment |
-| Learning | `GET /me/courses/:id/progress` | Private progress |
-| Learning | `PUT /me/lessons/:id/progress` | Validated completion update |
-| Certifications | `GET /certifications` | Program directory |
-| Certifications | `GET /certifications/:slug` | Program details |
-| Certifications | `GET /certifications/:id/domains` | Blueprint data |
-| Questions | `POST /admin/questions` | Create question |
-| Questions | `POST /admin/questions/:id/submit-review` | Submit review |
-| Questions | `POST /admin/questions/:id/approve` | Approve |
-| Questions | `POST /admin/questions/:id/publish` | Publish |
-| Exams | `GET /exams` | Available exams |
-| Exams | `POST /exams/:id/attempts` | Begin attempt |
-| Exams | `GET /attempts/:id` | Secure attempt payload |
-| Exams | `PUT /attempts/:id/answers/:questionId` | Save answer |
-| Exams | `POST /attempts/:id/submit` | Finalize exam |
-| Exams | `GET /attempts/:id/results` | Authorized result |
-| Orders | `POST /orders` | Create server-calculated order |
-| Payments | `POST /payments/initialize` | Create hosted checkout |
-| Payments | `POST /webhooks/payments/:provider` | Signed webhook handler |
-| Billing | `GET /me/orders` | Private order history |
-| Admin | `GET /admin/reports/overview` | Permissioned analytics |
-| Operations | `GET /health/live` | Process liveness |
-| Operations | `GET /health/ready` | Dependency readiness |
+| Domain         | Method and route                          | Purpose                                         |
+| -------------- | ----------------------------------------- | ----------------------------------------------- |
+| Auth           | `POST /auth/register`                     | Create user                                     |
+| Auth           | `POST /auth/login`                        | Authenticate                                    |
+| Auth           | `POST /auth/logout`                       | Revoke current session                          |
+| Auth           | `POST /auth/refresh`                      | Refresh only if token model used                |
+| Auth           | `GET /auth/me`                            | Current account                                 |
+| Auth           | `POST /auth/verify-email`                 | Verify email token                              |
+| Auth           | `POST /auth/forgot-password`              | Request reset without leaking account existence |
+| Auth           | `POST /auth/reset-password`               | Single-use reset                                |
+| Auth           | `GET /auth/sessions`                      | List sessions                                   |
+| Auth           | `DELETE /auth/sessions/:id`               | Revoke session                                  |
+| Courses        | `GET /courses`                            | Public published list                           |
+| Courses        | `GET /courses/:slug`                      | Public course details                           |
+| Courses        | `POST /courses`                           | Authorized create                               |
+| Courses        | `PATCH /courses/:id`                      | Authorized update                               |
+| Courses        | `POST /courses/:id/publish`               | Reviewed publish                                |
+| Courses        | `GET /courses/:id/modules`                | Syllabus                                        |
+| Enrollment     | `GET /me/enrollments`                     | Learner courses                                 |
+| Enrollment     | `POST /courses/:id/enroll`                | Free or entitlement-backed enrollment           |
+| Learning       | `GET /me/courses/:id/progress`            | Private progress                                |
+| Learning       | `PUT /me/lessons/:id/progress`            | Validated completion update                     |
+| Certifications | `GET /certifications`                     | Program directory                               |
+| Certifications | `GET /certifications/:slug`               | Program details                                 |
+| Certifications | `GET /certifications/:id/domains`         | Blueprint data                                  |
+| Questions      | `POST /admin/questions`                   | Create question                                 |
+| Questions      | `POST /admin/questions/:id/submit-review` | Submit review                                   |
+| Questions      | `POST /admin/questions/:id/approve`       | Approve                                         |
+| Questions      | `POST /admin/questions/:id/publish`       | Publish                                         |
+| Exams          | `GET /exams`                              | Available exams                                 |
+| Exams          | `POST /exams/:id/attempts`                | Begin attempt                                   |
+| Exams          | `GET /attempts/:id`                       | Secure attempt payload                          |
+| Exams          | `PUT /attempts/:id/answers/:questionId`   | Save answer                                     |
+| Exams          | `POST /attempts/:id/submit`               | Finalize exam                                   |
+| Exams          | `GET /attempts/:id/results`               | Authorized result                               |
+| Orders         | `POST /orders`                            | Create server-calculated order                  |
+| Payments       | `POST /payments/initialize`               | Create hosted checkout                          |
+| Payments       | `POST /webhooks/payments/:provider`       | Signed webhook handler                          |
+| Billing        | `GET /me/orders`                          | Private order history                           |
+| Admin          | `GET /admin/reports/overview`             | Permissioned analytics                          |
+| Operations     | `GET /health/live`                        | Process liveness                                |
+| Operations     | `GET /health/ready`                       | Dependency readiness                            |
 
 Public operations should not be conflated with admin mutations. Use consistent typed response and error envelopes, cursor-based or bounded offset pagination, explicit filtering and versioned OpenAPI. Exact API shapes must be finalized in ADRs before frontend/backend integration.
 
@@ -410,14 +410,14 @@ Public operations should not be conflated with admin mutations. Use consistent t
 
 ### 9.1 Primary relational entities
 
-| Domain | Tables (initial design) |
-|---|---|
-| Identity | `users`, `roles`, `permissions`, `user_roles`, `sessions`, `verification_tokens`, `password_reset_tokens` |
-| Education | `categories`, `courses`, `course_versions`, `modules`, `lessons`, `lesson_resources`, `enrollments`, `lesson_progress`, `learning_paths` |
-| Certifications | `vendors`, `certifications`, `certification_versions`, `exam_domains`, `exam_objectives` |
-| Assessment | `questions`, `question_revisions`, `question_options`, `question_reviews`, `exams`, `exam_blueprints`, `exam_attempts`, `attempt_questions`, `attempt_answers`, `exam_results`, `domain_results` |
-| Commerce | `products`, `prices`, `orders`, `order_items`, `payments`, `payment_events`, `refunds`, `entitlements`, `subscriptions` (optional) |
-| Operations | `audit_logs`, `notifications`, `notification_preferences`, `job_queue`, `system_settings`, `completion_certificates` |
+| Domain         | Tables (initial design)                                                                                                                                                                          |
+| -------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Identity       | `users`, `roles`, `permissions`, `user_roles`, `sessions`, `verification_tokens`, `password_reset_tokens`                                                                                        |
+| Education      | `categories`, `courses`, `course_versions`, `modules`, `lessons`, `lesson_resources`, `enrollments`, `lesson_progress`, `learning_paths`                                                         |
+| Certifications | `vendors`, `certifications`, `certification_versions`, `exam_domains`, `exam_objectives`                                                                                                         |
+| Assessment     | `questions`, `question_revisions`, `question_options`, `question_reviews`, `exams`, `exam_blueprints`, `exam_attempts`, `attempt_questions`, `attempt_answers`, `exam_results`, `domain_results` |
+| Commerce       | `products`, `prices`, `orders`, `order_items`, `payments`, `payment_events`, `refunds`, `entitlements`, `subscriptions` (optional)                                                               |
+| Operations     | `audit_logs`, `notifications`, `notification_preferences`, `job_queue`, `system_settings`, `completion_certificates`                                                                             |
 
 ### 9.2 Database rules
 
@@ -472,24 +472,24 @@ Define entitlement start/end date, assigned user, product, status, grant source 
 
 ### 11.1 Admin routes
 
-| Route | Function |
-|---|---|
-| `/admin` | KPI dashboard and operational alerts |
-| `/admin/users` | Users, statuses, role assignments |
-| `/admin/roles` | Least-privilege permissions |
-| `/admin/courses` | Course lifecycle |
-| `/admin/categories` | Taxonomy |
-| `/admin/lessons` | Lesson authoring and resources |
-| `/admin/certifications` | Vendors, programs, blueprint versions |
-| `/admin/question-bank` | Create, review, publish and retire items |
-| `/admin/exams` | Mock exam blueprints, publication and attempts |
-| `/admin/enrollments` | Student access and support actions |
-| `/admin/orders` | Order records |
-| `/admin/payments` | Transactions, refunds, reconciliation |
-| `/admin/certificates` | Course-completion credentials |
-| `/admin/reports` | Enrollments, learning, exam metrics, sales |
-| `/admin/audit-logs` | Investigable high-risk changes |
-| `/admin/settings` | Approved business settings, templates and feature flags |
+| Route                   | Function                                                |
+| ----------------------- | ------------------------------------------------------- |
+| `/admin`                | KPI dashboard and operational alerts                    |
+| `/admin/users`          | Users, statuses, role assignments                       |
+| `/admin/roles`          | Least-privilege permissions                             |
+| `/admin/courses`        | Course lifecycle                                        |
+| `/admin/categories`     | Taxonomy                                                |
+| `/admin/lessons`        | Lesson authoring and resources                          |
+| `/admin/certifications` | Vendors, programs, blueprint versions                   |
+| `/admin/question-bank`  | Create, review, publish and retire items                |
+| `/admin/exams`          | Mock exam blueprints, publication and attempts          |
+| `/admin/enrollments`    | Student access and support actions                      |
+| `/admin/orders`         | Order records                                           |
+| `/admin/payments`       | Transactions, refunds, reconciliation                   |
+| `/admin/certificates`   | Course-completion credentials                           |
+| `/admin/reports`        | Enrollments, learning, exam metrics, sales              |
+| `/admin/audit-logs`     | Investigable high-risk changes                          |
+| `/admin/settings`       | Approved business settings, templates and feature flags |
 
 ### 11.2 Instructor and content manager
 
@@ -510,6 +510,7 @@ Use **OWASP ASVS 5.0** as a verification framework, with a risk-based Level 2 ta
 ### 12.2 Controls by layer
 
 **Identity and sessions**
+
 - Argon2id password hashing with deployment-appropriate parameters.
 - Single-use, short-lived password-reset/verification tokens stored as secure hashes where appropriate.
 - Session rotation after login/elevation, timeout, revocation and cookie security.
@@ -517,11 +518,13 @@ Use **OWASP ASVS 5.0** as a verification framework, with a risk-based Level 2 ta
 - Rate limiting and abuse detection for auth and contact endpoints.
 
 **Authorization**
+
 - Backend RBAC plus object-level checks and explicit entitlements.
 - Deny by default and least privilege.
 - Permissions tested for students, instructors, support and administrators.
 
 **Application and browser**
+
 - Runtime input validation (e.g. Zod), output encoding, safe rich text sanitization.
 - Parameterized SQL; no string-concatenated queries.
 - CSP, HSTS, X-Content-Type-Options, Referrer-Policy, framing restrictions, `Secure`/`HttpOnly`/`SameSite` cookies.
@@ -531,6 +534,7 @@ Use **OWASP ASVS 5.0** as a verification framework, with a risk-based Level 2 ta
 - Error responses that exclude stacks, database internals, secrets and PII.
 
 **Operations and supply chain**
+
 - Secret scanning and dependency/SAST scans in CI.
 - Dependabot or equivalent dependency update policy.
 - Least-privilege workflow tokens and GitHub branch protections.
@@ -601,6 +605,7 @@ npm run dev
 **These commands describe the target developer experience; they are not asserted to work in the current repository until implemented.**
 
 Suggested local service endpoints:
+
 - Frontend: `http://localhost:3000`
 - API: `http://localhost:4000/api/v1`
 - API liveness: `http://localhost:4000/health/live`
@@ -649,16 +654,16 @@ TypeScript strict mode, ESLint, Prettier, schema validation, descriptive error h
 
 ### 15.3 Baseline measurable targets
 
-| Area | Initial target / gate |
-|---|---|
-| Core Web Vitals | LCP ≤2.5 s, INP ≤200 ms, CLS ≤0.1 at p75 of representative field data |
-| Accessibility | WCAG 2.2 AA target; no unresolved critical accessibility defects |
-| API | ≥95% typical read requests under 500 ms at defined baseline load; external delays excluded |
-| CI | Lint/typecheck/unit/integration/build/security checks pass |
-| Payments | Replayed/duplicate webhooks never double-grant entitlements |
-| Exam integrity | Server timing and scoring correct under concurrent/retry conditions |
-| Backup | Successful documented restore test before launch |
-| Vulnerabilities | No unaccepted critical/high findings |
+| Area            | Initial target / gate                                                                      |
+| --------------- | ------------------------------------------------------------------------------------------ |
+| Core Web Vitals | LCP ≤2.5 s, INP ≤200 ms, CLS ≤0.1 at p75 of representative field data                      |
+| Accessibility   | WCAG 2.2 AA target; no unresolved critical accessibility defects                           |
+| API             | ≥95% typical read requests under 500 ms at defined baseline load; external delays excluded |
+| CI              | Lint/typecheck/unit/integration/build/security checks pass                                 |
+| Payments        | Replayed/duplicate webhooks never double-grant entitlements                                |
+| Exam integrity  | Server timing and scoring correct under concurrent/retry conditions                        |
+| Backup          | Successful documented restore test before launch                                           |
+| Vulnerabilities | No unaccepted critical/high findings                                                       |
 
 Performance numbers are **provisional acceptance targets**, not a claim about current performance. Baseline workload and test environment must be documented.
 
@@ -734,19 +739,19 @@ All metrics require defined calculation rules and time windows, a single authori
 
 The phases below are **dependency-ordered, not fixed-duration promises**. Complexity and duration must be estimated from the legacy audit and team capacity.
 
-| Phase | Focus | Primary output | Exit gate |
-|---|---|---|---|
-| **0** | Legacy audit + new repo initialization | V1 baseline, migration decisions, backlog | Repo reproducible; risks documented |
-| **1** | Engineering foundation | Monorepo/workspace, TS, DB migration, CI, contracts | Fresh install/build/tests pass |
-| **2** | Identity and authorization | Registration, sessions, MFA for admin, RBAC | Auth/security tests pass |
-| **3** | Public website + brand | Responsive pages, SEO, contact/legal | Responsive and accessible site approved |
-| **4** | LMS core | Courses, lessons, player, enrollment, progress | Learner completes end-to-end free course |
-| **5** | Certification content architecture | Vendors, blueprints, reviewable question bank | Reviewed question set published |
-| **6** | Practice and mock exams | Secure attempts, timers, scoring, results | End-to-end exam and concurrency tests pass |
-| **7** | Commerce | Orders, hosted checkout, verified webhooks, entitlements | Sandbox payment/reconciliation tests pass |
-| **8** | Operations and admin | Reports, user/content/payment management, email | Admin workflows and audit logs pass |
-| **9** | Hardening / release candidate | Load/security/accessibility/restore rehearsal | All production acceptance gates met |
-| **10** | Controlled launch | Approved hosting, DNS, HTTPS, live payment onboarding | Monitoring, smoke tests, rollback plan approved |
+| Phase  | Focus                                  | Primary output                                           | Exit gate                                       |
+| ------ | -------------------------------------- | -------------------------------------------------------- | ----------------------------------------------- |
+| **0**  | Legacy audit + new repo initialization | V1 baseline, migration decisions, backlog                | Repo reproducible; risks documented             |
+| **1**  | Engineering foundation                 | Monorepo/workspace, TS, DB migration, CI, contracts      | Fresh install/build/tests pass                  |
+| **2**  | Identity and authorization             | Registration, sessions, MFA for admin, RBAC              | Auth/security tests pass                        |
+| **3**  | Public website + brand                 | Responsive pages, SEO, contact/legal                     | Responsive and accessible site approved         |
+| **4**  | LMS core                               | Courses, lessons, player, enrollment, progress           | Learner completes end-to-end free course        |
+| **5**  | Certification content architecture     | Vendors, blueprints, reviewable question bank            | Reviewed question set published                 |
+| **6**  | Practice and mock exams                | Secure attempts, timers, scoring, results                | End-to-end exam and concurrency tests pass      |
+| **7**  | Commerce                               | Orders, hosted checkout, verified webhooks, entitlements | Sandbox payment/reconciliation tests pass       |
+| **8**  | Operations and admin                   | Reports, user/content/payment management, email          | Admin workflows and audit logs pass             |
+| **9**  | Hardening / release candidate          | Load/security/accessibility/restore rehearsal            | All production acceptance gates met             |
+| **10** | Controlled launch                      | Approved hosting, DNS, HTTPS, live payment onboarding    | Monitoring, smoke tests, rollback plan approved |
 
 **Scope discipline:** Do not start AI tutoring, arbitrary code execution or a social forum before exam, payment, and security fundamentals are complete.
 
@@ -781,17 +786,17 @@ Each issue must define scope, dependencies, acceptance criteria, testing expecta
 
 The first implementation may be carried out by a solo technical lead, but responsibilities must remain explicit:
 
-| Responsibility | Core accountability |
-|---|---|
-| Product owner | Priority, acceptance, commercial rules |
-| Technical lead | Architecture, code quality, release approval |
-| Frontend engineer | UI/UX, accessibility, page implementation |
-| Backend engineer | APIs, authorization, exam/commerce logic |
-| Database owner | Migrations, data integrity, backup |
-| Security reviewer | Threat model, findings, release gates |
+| Responsibility         | Core accountability                             |
+| ---------------------- | ----------------------------------------------- |
+| Product owner          | Priority, acceptance, commercial rules          |
+| Technical lead         | Architecture, code quality, release approval    |
+| Frontend engineer      | UI/UX, accessibility, page implementation       |
+| Backend engineer       | APIs, authorization, exam/commerce logic        |
+| Database owner         | Migrations, data integrity, backup              |
+| Security reviewer      | Threat model, findings, release gates           |
 | Education/content lead | Syllabi, question correctness, version tracking |
-| QA owner | Test plans, defects, acceptance evidence |
-| Operations owner | Monitoring, restoration, incident response |
+| QA owner               | Test plans, defects, acceptance evidence        |
+| Operations owner       | Monitoring, restoration, incident response      |
 
 One person may fill multiple roles, but should maintain separate checklists and records.
 
@@ -807,33 +812,35 @@ Implementation merged; lint/types/build/tests pass; sensitive paths authorized; 
 
 ## 21. Risk register
 
-| Risk | Severity | Mitigation |
-|---|---|---|
-| Legacy code imported with vulnerabilities | High | Audit, scans, selective porting |
-| Exam keys exposed or client-side scored | Critical | Server-authoritative scoring and secure payloads |
-| Unauthorized access to attempts/content | Critical | RBAC + BOLA test suite |
-| Duplicate/forged payment confirmations | Critical | Signed webhooks, server verification, idempotency |
-| Course/payment migration damages data | High | Tested migrations, backups, rollback strategy |
-| Outdated or inaccurate certification content | High | Versioned official objectives and review workflow |
-| Unauthorized copyrighted questions | High | Original/licensed content policy |
-| Poor experience on mobile/slow connections | High | Mobile/low-bandwidth testing |
-| Scope creep delays first release | High | P0/P1 gates; defer post-launch features |
-| Student privacy breach | Critical | Least privilege, privacy design, incident response |
-| Media storage loss | High | Backups and restore tests |
-| Inadequate support workflow | Medium | Contact form, support triage, admin tooling |
-| Domain/email misconfiguration | Medium | DNS/TLS/SPF/DKIM/DMARC checks |
+| Risk                                         | Severity | Mitigation                                         |
+| -------------------------------------------- | -------- | -------------------------------------------------- |
+| Legacy code imported with vulnerabilities    | High     | Audit, scans, selective porting                    |
+| Exam keys exposed or client-side scored      | Critical | Server-authoritative scoring and secure payloads   |
+| Unauthorized access to attempts/content      | Critical | RBAC + BOLA test suite                             |
+| Duplicate/forged payment confirmations       | Critical | Signed webhooks, server verification, idempotency  |
+| Course/payment migration damages data        | High     | Tested migrations, backups, rollback strategy      |
+| Outdated or inaccurate certification content | High     | Versioned official objectives and review workflow  |
+| Unauthorized copyrighted questions           | High     | Original/licensed content policy                   |
+| Poor experience on mobile/slow connections   | High     | Mobile/low-bandwidth testing                       |
+| Scope creep delays first release             | High     | P0/P1 gates; defer post-launch features            |
+| Student privacy breach                       | Critical | Least privilege, privacy design, incident response |
+| Media storage loss                           | High     | Backups and restore tests                          |
+| Inadequate support workflow                  | Medium   | Contact form, support triage, admin tooling        |
+| Domain/email misconfiguration                | Medium   | DNS/TLS/SPF/DKIM/DMARC checks                      |
 
 ---
 
 ## 22. Production go/no-go checklist
 
 **Product and legal**
+
 - [ ] All required P0/P1 features and policy pages approved.
 - [ ] Content rights and current vendor exam versions verified.
 - [ ] Prices, access periods and refund rules published.
 - [ ] Official-certification non-affiliation language present where needed.
 
 **Security and privacy**
+
 - [ ] Admin MFA enforced.
 - [ ] Authentication, BOLA/IDOR and role checks tested.
 - [ ] No client-side active-exam answer keys.
@@ -842,6 +849,7 @@ Implementation merged; lint/types/build/tests pass; sensitive paths authorized; 
 - [ ] Privacy, data retention and processor inventory approved.
 
 **Engineering and QA**
+
 - [ ] Clean dependency install and production build.
 - [ ] Migrations tested on representative data.
 - [ ] Critical E2E and integration tests pass.
@@ -849,6 +857,7 @@ Implementation merged; lint/types/build/tests pass; sensitive paths authorized; 
 - [ ] Logging, metrics and alerts working.
 
 **Operations**
+
 - [ ] Canonical `https://www.mystackvarsity.com` reachable over HTTPS.
 - [ ] Apex-domain redirect, sitemap and robots policy correct.
 - [ ] `hello@mystackvarsity.com` contact and sending-domain settings verified.
