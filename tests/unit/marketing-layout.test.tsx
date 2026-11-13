@@ -15,14 +15,16 @@ describe("Marketing layout shell", () => {
     fireEvent.click(toggleButton);
     expect(screen.getByRole("button", { name: /close navigation menu/i })).toHaveAttribute(
       "aria-expanded",
-      "true",
+      "true"
     );
     expect(screen.getByRole("navigation", { name: /mobile navigation/i })).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "Courses" })).toHaveAttribute("href", "/courses");
     expect(screen.getByRole("link", { name: "Register" })).toHaveAttribute("href", "/register");
 
     fireEvent.keyDown(window, { key: "Escape" });
-    expect(screen.queryByRole("navigation", { name: /mobile navigation/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("navigation", { name: /mobile navigation/i })
+    ).not.toBeInTheDocument();
   });
 
   it("renders footer sections, verified email, and legal links without unverified socials", () => {
@@ -31,9 +33,12 @@ describe("Marketing layout shell", () => {
     expect(screen.getByRole("contentinfo")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: "hello@mystackvarsity.com" })).toHaveAttribute(
       "href",
-      "mailto:hello@mystackvarsity.com",
+      "mailto:hello@mystackvarsity.com"
     );
-    expect(screen.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute("href", "/privacy");
+    expect(screen.getByRole("link", { name: "Privacy Policy" })).toHaveAttribute(
+      "href",
+      "/privacy"
+    );
     expect(screen.getByRole("link", { name: "Terms of Use" })).toHaveAttribute("href", "/terms");
   });
 });
