@@ -2,25 +2,25 @@
 
 ## 1. Testing Layers
 
-| Layer | Framework | Directory | Environment |
-|---|---|---|---|
-| **Unit Tests** | Vitest | `tests/unit/` | `node` (default) |
-| **Component Tests** | Vitest + React Testing Library + `@testing-library/jest-dom` | `tests/unit/` (or `*.test.tsx` with `@vitest-environment jsdom`) | `jsdom` |
-| **Integration Tests** | Vitest | `tests/integration/` | `node` |
-| **End-to-End Tests** | Playwright (`chromium`, `firefox`, `webkit`) | `tests/e2e/` | Browser |
+| Layer                 | Framework                                                    | Directory                                                        | Environment      |
+| --------------------- | ------------------------------------------------------------ | ---------------------------------------------------------------- | ---------------- |
+| **Unit Tests**        | Vitest                                                       | `tests/unit/`                                                    | `node` (default) |
+| **Component Tests**   | Vitest + React Testing Library + `@testing-library/jest-dom` | `tests/unit/` (or `*.test.tsx` with `@vitest-environment jsdom`) | `jsdom`          |
+| **Integration Tests** | Vitest                                                       | `tests/integration/`                                             | `node`           |
+| **End-to-End Tests**  | Playwright (`chromium`, `firefox`, `webkit`)                 | `tests/e2e/`                                                     | Browser          |
 
 ---
 
 ## 2. Commands
 
-| Script | Purpose |
-|---|---|
-| `npm test` | Run all Vitest unit and integration tests |
-| `npm run test:unit` | Run unit & component tests in `tests/unit/` |
-| `npm run test:integration` | Run integration tests in `tests/integration/` |
-| `npm run test:watch` | Run Vitest in watch mode |
-| `npm run test:coverage` | Run Vitest with V8 coverage (`text`, `html`, `lcov`) |
-| `npm run test:e2e` | Run Playwright E2E smoke tests |
+| Script                     | Purpose                                              |
+| -------------------------- | ---------------------------------------------------- |
+| `npm test`                 | Run all Vitest unit and integration tests            |
+| `npm run test:unit`        | Run unit & component tests in `tests/unit/`          |
+| `npm run test:integration` | Run integration tests in `tests/integration/`        |
+| `npm run test:watch`       | Run Vitest in watch mode                             |
+| `npm run test:coverage`    | Run Vitest with V8 coverage (`text`, `html`, `lcov`) |
+| `npm run test:e2e`         | Run Playwright E2E smoke tests                       |
 
 ---
 

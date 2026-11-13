@@ -13,19 +13,19 @@ Importing `src/config/server-env.ts` from a Client Component triggers a Next.js 
 
 ## 2. Environment Variable Inventory
 
-| Variable | Scope | Status | Description |
-|---|---|---|---|
-| `NODE_ENV` | Server | Auto-set | Runtime mode (`development`, `test`, `production`) |
-| `NEXT_PUBLIC_APP_NAME` | Public | Defaulted | Display name (`Stack Varsity`) |
-| `NEXT_PUBLIC_APP_URL` | Public | Defaulted | Canonical app URL (`http://localhost:3000` locally) |
-| `DATABASE_URL` | Server | Required for DB | PostgreSQL connection string (`postgresql://...`) |
-| `AUTH_SECRET` | Server | Planned (Phase 2) | Auth.js session encryption secret (32+ chars when set) |
-| `AUTH_URL` | Server | Planned (Phase 2) | Auth.js canonical callback URL |
-| `PAYSTACK_SECRET_KEY` | Server | Planned (Phase 7) | Paystack server-side API secret key |
-| `PAYSTACK_WEBHOOK_SECRET` | Server | Planned (Phase 7) | Paystack webhook HMAC verification secret |
-| `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` | Public | Planned (Phase 7) | Paystack browser-safe public key |
-| `EMAIL_PROVIDER_API_KEY` | Server | Planned (Phase 8) | Transactional email provider API key |
-| `EMAIL_FROM` | Server | Planned (Phase 8) | Default sender address (`hello@mystackvarsity.com`) |
+| Variable                          | Scope  | Status            | Description                                            |
+| --------------------------------- | ------ | ----------------- | ------------------------------------------------------ |
+| `NODE_ENV`                        | Server | Auto-set          | Runtime mode (`development`, `test`, `production`)     |
+| `NEXT_PUBLIC_APP_NAME`            | Public | Defaulted         | Display name (`Stack Varsity`)                         |
+| `NEXT_PUBLIC_APP_URL`             | Public | Defaulted         | Canonical app URL (`http://localhost:3000` locally)    |
+| `DATABASE_URL`                    | Server | Required for DB   | PostgreSQL connection string (`postgresql://...`)      |
+| `AUTH_SECRET`                     | Server | Planned (Phase 2) | Auth.js session encryption secret (32+ chars when set) |
+| `AUTH_URL`                        | Server | Planned (Phase 2) | Auth.js canonical callback URL                         |
+| `PAYSTACK_SECRET_KEY`             | Server | Planned (Phase 7) | Paystack server-side API secret key                    |
+| `PAYSTACK_WEBHOOK_SECRET`         | Server | Planned (Phase 7) | Paystack webhook HMAC verification secret              |
+| `NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY` | Public | Planned (Phase 7) | Paystack browser-safe public key                       |
+| `EMAIL_PROVIDER_API_KEY`          | Server | Planned (Phase 8) | Transactional email provider API key                   |
+| `EMAIL_FROM`                      | Server | Planned (Phase 8) | Default sender address (`hello@mystackvarsity.com`)    |
 
 ---
 

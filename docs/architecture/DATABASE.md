@@ -46,13 +46,13 @@ Stack Varsity V1 uses **PostgreSQL** as its primary relational database. Local d
 
 ## 5. Prisma Workflow & Scripts
 
-| Command | Purpose |
-|---|---|
-| `npm run db:validate` | Validate `prisma/schema.prisma` syntax and config |
-| `npm run db:generate` | Generate Prisma Client into `src/generated/prisma` |
-| `npm run db:migrate` | Create and apply development migrations |
-| `npm run db:migrate:status` | Inspect migration status against the database |
-| `npm run db:studio` | Open Prisma Studio for local data inspection |
+| Command                     | Purpose                                            |
+| --------------------------- | -------------------------------------------------- |
+| `npm run db:validate`       | Validate `prisma/schema.prisma` syntax and config  |
+| `npm run db:generate`       | Generate Prisma Client into `src/generated/prisma` |
+| `npm run db:migrate`        | Create and apply development migrations            |
+| `npm run db:migrate:status` | Inspect migration status against the database      |
+| `npm run db:studio`         | Open Prisma Studio for local data inspection       |
 
 ---
 
@@ -60,5 +60,5 @@ Stack Varsity V1 uses **PostgreSQL** as its primary relational database. Local d
 
 - **Security**: Keep database access strictly on the server (`src/server/` or server-side module repositories). Validate all inputs with Zod before persistence. Never run destructive commands (`prisma migrate reset`, `--force-reset`) without explicit authorization.
 - **Troubleshooting**:
-  - *Connection refused (`ECONNREFUSED`)*: Verify `postgresql-x64-18` service or Docker container is running on port `5432`.
-  - *Prisma Client import errors*: Run `npm run db:generate`.
+  - _Connection refused (`ECONNREFUSED`)_: Verify `postgresql-x64-18` service or Docker container is running on port `5432`.
+  - _Prisma Client import errors_: Run `npm run db:generate`.

@@ -7,6 +7,27 @@ datasource db {
   provider = "postgresql"
 }
 
+/// Application roles for least-privilege RBAC.
+enum UserRole {
+  STUDENT
+  INSTRUCTOR
+  ADMIN
+}
+
+/// Account lifecycle states, independent of email verification.
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  DISABLED
+}
+
+/// Outcome of a recorded security audit event.
+enum AuditOutcome {
+  SUCCESS
+  FAILURE
+  DENIED
+}
+
 /// Minimal health-check model to verify PostgreSQL connectivity and migrations.
 model SystemHealthCheck {
   id        String   @id @default(cuid())
@@ -17,4 +38,132 @@ model SystemHealthCheck {
 
   @@index([checkedAt])
   @@map("system_health_checks")
+}
+
+/// Core application identity record.
+model User {
+  id            String     @id @default(cuid())
+  name          String?
+  email         String     @unique
+  emailVerified DateTime?  @map("email_verified")
+  image         String?
+  passwordHash  String?    @map("password_hash")
+  role          UserRole   @default(STUDENT)
+  status        UserStatus @default(ACTIVE)
+  mfaEnabled    Boolean    @default(false) @map("mfa_enabled")
+  lastLoginAt   DateTime?  @map("last_login_at")
+  createdAt     DateTime   @default(now()) @map("created_at")
+  updatedAt     DateTime   @updatedAt @map("updated_at")
+  deletedAt     DateTime?  @map("deleted_at")
+
+  accounts                Account[]
+  sessions                Session[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
+  actedAuditEvents        SecurityAuditEvent[]     @relation("AuditActor")
+  targetedAuditEvents     SecurityAuditEvent[]     @relation("AuditTarget")
+
+  @@index([role])
+  @@index([status])
+  @@index([deletedAt])
+  @@map("users")
+}
+
+/// External or provider-linked authentication accounts (Auth.js compatible).
+model Account {
+  id                String   @id @default(cuid())
+  userId            String   @map("user_id")
+  type              String
+  provider          String
+  providerAccountId String   @map("provider_account_id")
+  refresh_token     String?  @db.Text
+  access_token      String?  @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?  @db.Text
+  session_state     String?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+  @@map("accounts")
+}
+
+/// Server-persisted authentication session supporting immediate revocation and MFA state.
+model Session {
+  id            String    @id @default(cuid())
+  sessionToken  String    @unique @map("session_token")
+  userId        String    @map("user_id")
+  expires       DateTime
+  ipAddress     String?   @map("ip_address")
+  userAgent     String?   @map("user_agent")
+  mfaVerifiedAt DateTime? @map("mfa_verified_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expires])
+  @@map("sessions")
+}
+
+/// Single-use, hashed email verification token.
+model EmailVerificationToken {
+  id         String    @id @default(cuid())
+  userId     String    @map("user_id")
+  email      String
+  tokenHash  String    @unique @map("token_hash")
+  expiresAt  DateTime  @map("expires_at")
+  consumedAt DateTime? @map("consumed_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([email])
+  @@index([expiresAt])
+  @@map("email_verification_tokens")
+}
+
+/// Single-use, hashed password recovery token.
+model PasswordResetToken {
+  id          String    @id @default(cuid())
+  userId      String    @map("user_id")
+  tokenHash   String    @unique @map("token_hash")
+  expiresAt   DateTime  @map("expires_at")
+  consumedAt  DateTime? @map("consumed_at")
+  requestedIp String?   @map("requested_ip")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("password_reset_tokens")
+}
+
+/// Immutable security audit trail for authentication, authorization, and MFA events.
+model SecurityAuditEvent {
+  id           String       @id @default(cuid())
+  actorId      String?      @map("actor_id")
+  targetUserId String?      @map("target_user_id")
+  eventType    String       @map("event_type")
+  outcome      AuditOutcome @default(SUCCESS)
+  ipAddress    String?      @map("ip_address")
+  userAgent    String?      @map("user_agent")
+  metadata     Json?
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  actor      User? @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+  targetUser User? @relation("AuditTarget", fields: [targetUserId], references: [id], onDelete: SetNull)
+
+  @@index([actorId])
+  @@index([targetUserId])
+  @@index([eventType, createdAt])
+  @@map("security_audit_events")
 }

@@ -19,17 +19,17 @@ Stack Varsity V1 is built as a single **Next.js App Router** application followi
 
 ### Root Directories
 
-| Directory | Responsibility |
-|---|---|
-| `src/` | Application source code (routing, UI, domain modules, server infrastructure, shared utilities). |
-| `public/` | Static assets served directly by Next.js (`images/`, `icons/`, `fonts/`). |
-| `prisma/` | Prisma schema, client configuration, and ORM-level database definitions. |
-| `database/` | Supporting SQL/database artifacts (`migrations/`, `seeds/`). |
-| `tests/` | Automated test suites separated by level: `unit/`, `integration/`, and `e2e/`. |
-| `docs/` | Project documentation, including `MASTER_PLAN.md`, `MASTER_INSTRUCTIONS.md`, `architecture/`, and `api/`. |
-| `infra/` | Local and deployment infrastructure definitions (e.g., `infra/docker/`). |
-| `scripts/` | Developer, maintenance, and automation scripts. |
-| `.github/workflows/` | GitHub Actions CI/CD, linting, testing, and security scanning workflows. |
+| Directory            | Responsibility                                                                                            |
+| -------------------- | --------------------------------------------------------------------------------------------------------- |
+| `src/`               | Application source code (routing, UI, domain modules, server infrastructure, shared utilities).           |
+| `public/`            | Static assets served directly by Next.js (`images/`, `icons/`, `fonts/`).                                 |
+| `prisma/`            | Prisma schema, client configuration, and ORM-level database definitions.                                  |
+| `database/`          | Supporting SQL/database artifacts (`migrations/`, `seeds/`).                                              |
+| `tests/`             | Automated test suites separated by level: `unit/`, `integration/`, and `e2e/`.                            |
+| `docs/`              | Project documentation, including `MASTER_PLAN.md`, `MASTER_INSTRUCTIONS.md`, `architecture/`, and `api/`. |
+| `infra/`             | Local and deployment infrastructure definitions (e.g., `infra/docker/`).                                  |
+| `scripts/`           | Developer, maintenance, and automation scripts.                                                           |
+| `.github/workflows/` | GitHub Actions CI/CD, linting, testing, and security scanning workflows.                                  |
 
 ---
 

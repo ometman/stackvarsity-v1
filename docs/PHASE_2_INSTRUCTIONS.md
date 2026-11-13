@@ -1,4 +1,5 @@
 # STACK VARSITY V1
+
 # PHASE 2 — IDENTITY, AUTHENTICATION & ACCESS CONTROL
 
 ## ROLE AND RESPONSIBILITIES
@@ -20,6 +21,7 @@ Do not request confirmation after every step.
 When a step is completed successfully, committed, and pushed, automatically proceed to the next step.
 
 Stop only when:
+
 - Essential information cannot be obtained or safely inferred.
 - User credentials or administrative decisions are required.
 - A security-sensitive operation requires authorization.
@@ -104,17 +106,20 @@ Do not invent project completion status or validation results.
 Implement three application roles:
 
 **STUDENT**
+
 - Register for an account.
 - Log in and manage personal account information.
 - Access authorized student resources.
 - Access only their own protected information.
 
 **INSTRUCTOR**
+
 - Authenticate securely.
 - Access authorized instructor resources.
 - Manage only resources assigned to them when those features are introduced.
 
 **ADMIN**
+
 - Authenticate securely with additional security controls.
 - Access administrative functionality.
 - Manage authorized identities and roles.

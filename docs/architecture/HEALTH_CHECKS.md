@@ -2,10 +2,10 @@
 
 ## 1. Endpoints
 
-| Route | Purpose | Success | Failure |
-|---|---|---|---|
-| `GET /api/health` | Liveness check (app process is serving requests) | `200` (`status: "ok"`) | — |
-| `GET /api/ready` | Readiness check (PostgreSQL connectivity via `SELECT 1`, 3s timeout) | `200` (`status: "ok"`) | `503` (`status: "unavailable"`) |
+| Route             | Purpose                                                              | Success                | Failure                         |
+| ----------------- | -------------------------------------------------------------------- | ---------------------- | ------------------------------- |
+| `GET /api/health` | Liveness check (app process is serving requests)                     | `200` (`status: "ok"`) | —                               |
+| `GET /api/ready`  | Readiness check (PostgreSQL connectivity via `SELECT 1`, 3s timeout) | `200` (`status: "ok"`) | `503` (`status: "unavailable"`) |
 
 Both endpoints set `Cache-Control: no-store`.
 
