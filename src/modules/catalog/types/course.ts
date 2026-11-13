@@ -8,7 +8,7 @@ export type CourseCategory =
 
 export type CourseLevel = "Beginner" | "Intermediate" | "Foundational";
 
-export type CourseAvailability = "Preview / Upcoming";
+export type CourseAvailability = "Free / Open" | "Paid (Coming Soon)" | "Preview / Upcoming";
 
 export interface PublicCourseSummary {
   id: string;
@@ -17,9 +17,10 @@ export interface PublicCourseSummary {
   summary: string;
   category: CourseCategory;
   level: CourseLevel;
-  modality: "Self-paced (planned)";
+  modality: string;
   availability: CourseAvailability;
-  isProvisional: true;
+  isProvisional: boolean;
+  accessType?: "FREE" | "PAID";
 }
 
 export interface PublicCourseDetail extends PublicCourseSummary {

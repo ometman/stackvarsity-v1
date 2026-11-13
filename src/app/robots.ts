@@ -10,6 +10,7 @@ export default function robots(): MetadataRoute.Robots {
         "/admin",
         "/student",
         "/instructor",
+        "/learn",
         "/dev",
         "/api",
         "/login",

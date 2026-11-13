@@ -15,8 +15,12 @@ interface CourseDetailPageProps {
 }
 
 export async function generateStaticParams() {
-  const slugs = await listPublicCourseSlugs();
-  return slugs.map((slug) => ({ slug }));
+  try {
+    const slugs = await listPublicCourseSlugs();
+    return slugs.map((slug) => ({ slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: CourseDetailPageProps): Promise<Metadata> {

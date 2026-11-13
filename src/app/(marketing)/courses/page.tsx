@@ -43,14 +43,14 @@ export default function CoursesPage({ searchParams }: CoursesPageProps) {
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
       <div className="max-w-3xl">
-        <Badge variant="outline">Provisional Preview Catalog</Badge>
+        <Badge variant="outline">Course Catalog</Badge>
         <h1 className="mt-3 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
           Digital Skills Course Catalog
         </h1>
         <p className="mt-3 text-base leading-7 text-muted-foreground">
-          Browse our planned self-paced learning paths. Courses below are preview outlines while
-          interactive lesson delivery is prepared for upcoming releases; no paid enrollment is
-          active yet.
+          Browse published self-paced learning paths across AI, cloud, Linux, networking,
+          cybersecurity, web development, and data analytics. Enroll in free courses to start
+          learning immediately.
         </p>
       </div>
 

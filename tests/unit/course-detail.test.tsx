@@ -11,6 +11,16 @@ vi.mock("next/navigation", () => ({
   notFound: () => notFoundMock(),
 }));
 
+vi.mock("@/modules/catalog/services/catalog-service", async () => {
+  const { ProvisionalCourseCatalogRepository } =
+    await import("@/modules/catalog/repositories/course-repository");
+  const repo = new ProvisionalCourseCatalogRepository();
+  return {
+    getPublicCourseBySlug: (slug: string) => repo.findBySlug(slug),
+    listPublicCourseSlugs: async () => (await repo.listAll()).map((c) => c.slug),
+  };
+});
+
 describe("Public course detail page", () => {
   it("renders course details, learning outcomes, and registration CTA for a valid slug", async () => {
     const element = await CourseDetailPage({

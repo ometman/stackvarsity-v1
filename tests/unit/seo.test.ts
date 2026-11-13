@@ -1,6 +1,15 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import robots from "@/app/robots";
 import sitemap from "@/app/sitemap";
+
+vi.mock("@/modules/catalog/services/catalog-service", async () => {
+  const { ProvisionalCourseCatalogRepository } =
+    await import("@/modules/catalog/repositories/course-repository");
+  const repo = new ProvisionalCourseCatalogRepository();
+  return {
+    listPublicCourseSlugs: async () => (await repo.listAll()).map((c) => c.slug),
+  };
+});
 import {
   buildBreadcrumbJsonLd,
   buildOrganizationJsonLd,
