@@ -1,4 +1,5 @@
 import { ArrowRight, BookOpen, CheckCircle2, Compass, ShieldCheck } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { SectionHeader } from "@/components/shared/section-header";
 import { Badge } from "@/components/ui/badge";
@@ -11,10 +12,27 @@ import {
   offeringPillars,
 } from "@/config/marketing-content";
 import { siteConfig } from "@/config/site";
+import {
+  buildOrganizationJsonLd,
+  buildWebSiteJsonLd,
+  serializeJsonLd,
+} from "@/lib/seo/structured-data";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "/",
+  },
+};
 
 export default function HomePage() {
+  const structuredData = [buildOrganizationJsonLd(), buildWebSiteJsonLd()];
+
   return (
     <div className="flex flex-col">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(structuredData) }}
+      />
       {/* Hero Section */}
       <section className="border-b border-border bg-background py-16 sm:py-24">
         <div className="mx-auto max-w-6xl px-4">

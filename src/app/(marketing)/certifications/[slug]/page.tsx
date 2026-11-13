@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { buildBreadcrumbJsonLd, serializeJsonLd } from "@/lib/seo/structured-data";
 import {
   getCertificationTrackBySlug,
   listCertificationSlugs,
@@ -53,8 +54,18 @@ export default async function CertificationDetailPage({ params }: CertificationD
     notFound();
   }
 
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: "Home", path: "/" },
+    { name: "Certifications", path: "/certifications" },
+    { name: track.title, path: `/certifications/${track.slug}` },
+  ]);
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:py-16">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbJsonLd) }}
+      />
       <nav aria-label="Breadcrumb" className="mb-8">
         <ol className="flex flex-wrap items-center gap-1.5 text-sm text-muted-foreground">
           <li>

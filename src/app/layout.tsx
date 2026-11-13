@@ -24,6 +24,21 @@ export const metadata: Metadata = {
     "Stack Varsity is a digital skills education and professional IT certification examination preparation platform.",
   publisher: "Stack Varsity",
   authors: [{ name: "Stack Varsity", url: "https://www.mystackvarsity.com" }],
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    siteName: "Stack Varsity",
+    title: "Stack Varsity | Build • Educate • Innovate",
+    description:
+      "Practical digital skills education and independent professional IT certification exam preparation.",
+    url: "https://www.mystackvarsity.com",
+  },
+  twitter: {
+    card: "summary",
+    title: "Stack Varsity | Build • Educate • Innovate",
+    description:
+      "Practical digital skills education and independent professional IT certification exam preparation.",
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
