@@ -63,3 +63,12 @@ Stack Varsity uses a **hybrid encrypted-JWT + server-persisted PostgreSQL `Sessi
 - **Remember-Session Support**: Standard sessions use a 12-hour server-side TTL; opting into "Keep me signed in" extends the server-side TTL to 7 days.
 - **Open-Redirect Protection**: `sanitizeRedirectPath()` rejects external URLs, protocol-relative URLs (`//`), and scheme-prefixed paths.
 - **Logout**: `POST /api/auth/logout` deletes the PostgreSQL `Session` row and clears the Auth.js session cookie.
+
+---
+
+## 8. Password Recovery (`/forgot-password`, `/reset-password`, `/api/auth/forgot-password`, `/api/auth/reset-password`)
+
+- **Anti-Enumeration**: `POST /api/auth/forgot-password` always returns a generic `200 OK` message regardless of whether the email exists.
+- **Token Security**: `PasswordResetToken` stores only the SHA-256 `tokenHash` with a 1-hour TTL and atomic single-use consumption.
+- **Session Invalidation**: Completing a password reset updates `passwordHash` with Argon2id and deletes **all** active `Session` rows for that user. Users must sign in again with their new password.
+- **Notification**: Sends a password-change confirmation email without ever including the new password.
