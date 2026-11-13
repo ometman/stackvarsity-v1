@@ -47,7 +47,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-10 flex flex-col gap-2 border-t border-border pt-6 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>&copy; {new Date().getFullYear()} Stack Varsity. All rights reserved.</p>
+          <p>&copy; 2026 Stack Varsity. All rights reserved.</p>
           <p>
             Independent training &amp; exam preparation. Third-party certification marks belong to
             their respective owners.
