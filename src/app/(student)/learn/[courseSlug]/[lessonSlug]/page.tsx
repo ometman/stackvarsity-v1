@@ -6,6 +6,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { ForbiddenError } from "@/modules/auth/errors";
 import { requirePageRole } from "@/modules/auth/route-guards";
 import { EnrollmentServiceError } from "@/modules/enrollments/services/enrollment-service";
+import { LessonCompletionButton } from "@/modules/learning/components/lesson-completion-button";
 import { LessonPlayerShell } from "@/modules/learning/components/lesson-player-shell";
 import {
   getProtectedLessonView,
@@ -72,6 +73,14 @@ async function LessonPlayerContent({
       nextLesson={data.nextLesson}
       completedLessonIds={data.completedLessonIds}
       progressPercent={data.progressPercent}
+      completionAction={
+        data.mode === "ENROLLED" ? (
+          <LessonCompletionButton
+            lessonId={data.currentLesson.id}
+            initialCompleted={data.isCurrentLessonCompleted}
+          />
+        ) : null
+      }
     />
   );
 }
