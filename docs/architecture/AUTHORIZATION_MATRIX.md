@@ -31,3 +31,17 @@ All authorization checks run on the server using trusted PostgreSQL `Session` an
 - `requireRole(roles, options)` — Verifies role membership and enforces Admin MFA when enabled/required.
 - `requirePermission(permission)` — Verifies role-permission grant and enforces Admin MFA.
 - `requireResourceAccess({ ownerId, assignedUserIds, allowAdmin })` — Enforces resource ownership/assignment to prevent IDOR.
+
+---
+
+## 4. Protected Routes & Resource Ownership
+
+- **Protected App Routes**:
+  - `/student` (`src/app/(student)/student/page.tsx`) — Requires `STUDENT` or `ADMIN`.
+  - `/instructor` (`src/app/(instructor)/instructor/page.tsx`) — Requires `INSTRUCTOR` or `ADMIN`.
+  - `/admin` (`src/app/(admin)/admin/page.tsx`) — Requires `ADMIN` (plus completed MFA when enabled).
+- **Protected API Endpoints**:
+  - `GET /api/students/[studentId]/record` — Enforces `requireResourceAccess({ ownerId: studentId, allowAdmin: true })` to prevent Insecure Direct Object Reference (IDOR).
+  - `GET /api/instructor/courses` — Enforces `requireRole(["INSTRUCTOR", "ADMIN"])`.
+  - `GET /api/admin/audit-events` — Enforces `requirePermission(PERMISSIONS.ADMIN_AUDIT_READ)`.
+  - `PATCH /api/admin/users/[userId]/role` — Enforces `requirePermission(PERMISSIONS.ADMIN_USERS_MANAGE_ROLES)`.
