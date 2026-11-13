@@ -37,3 +37,11 @@ Stack Varsity uses a **hybrid encrypted-JWT + server-persisted PostgreSQL `Sessi
 - `getCurrentUser()` — Returns the authenticated `AuthenticatedUser` projection or `null`.
 - `requireAuth()` — Returns the validated session or throws `UnauthorizedError` (401).
 - `requireActiveUser()` — Returns the active user or throws `UnauthorizedError` (401).
+
+---
+
+## 5. Student Registration (`/register` & `POST /api/auth/register`)
+
+- **Validation**: `registerSchema` (Zod `.strict()`) enforces required fields, normalized lowercase email (`<= 254` chars), full name (`2..100` chars), strong password policy (`10..128` chars with uppercase, lowercase, digit, and symbol), and password confirmation.
+- **Privilege Protection**: `.strict()` rejects any client-supplied `role`, `status`, `emailVerified`, `mfaEnabled`, or `permissions` fields. `registerStudent()` explicitly persists `role: "STUDENT"`, `status: "ACTIVE"`, and `emailVerified: null`.
+- **Concurrency & Rate Limiting**: Duplicate emails (including concurrent `P2002` races) return `409 Conflict`. `POST /api/auth/register` applies IP-based rate limiting (5 attempts per 15 minutes in the local limiter; distributed Redis/PostgreSQL store required for multi-instance production).
