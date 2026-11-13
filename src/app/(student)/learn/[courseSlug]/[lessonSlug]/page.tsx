@@ -22,13 +22,8 @@ interface LessonPageProps {
   params: Promise<{ courseSlug: string; lessonSlug: string }>;
 }
 
-async function LessonPlayerContent({
-  courseSlug,
-  lessonSlug,
-}: {
-  courseSlug: string;
-  lessonSlug: string;
-}) {
+async function LessonPlayerContent({ params }: LessonPageProps) {
+  const { courseSlug, lessonSlug } = await params;
   const session = await requirePageRole(
     ["STUDENT", "INSTRUCTOR", "ADMIN"],
     `/learn/${courseSlug}/${lessonSlug}`
@@ -85,14 +80,13 @@ async function LessonPlayerContent({
   );
 }
 
-export default async function LearnLessonPage({ params }: LessonPageProps) {
-  const { courseSlug, lessonSlug } = await params;
+export default function LearnLessonPage({ params }: LessonPageProps) {
   return (
     <main className="flex-1">
       <Suspense
         fallback={<div className="p-8 text-sm text-muted-foreground">Loading lesson...</div>}
       >
-        <LessonPlayerContent courseSlug={courseSlug} lessonSlug={lessonSlug} />
+        <LessonPlayerContent params={params} />
       </Suspense>
     </main>
   );

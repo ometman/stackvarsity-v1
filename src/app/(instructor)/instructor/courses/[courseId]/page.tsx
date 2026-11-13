@@ -22,7 +22,8 @@ interface CourseEditorPageProps {
   params: Promise<{ courseId: string }>;
 }
 
-async function CourseEditorContent({ courseId }: { courseId: string }) {
+async function CourseEditorContent({ params }: CourseEditorPageProps) {
+  const { courseId } = await params;
   const session = await requirePageRole(["INSTRUCTOR", "ADMIN"], `/instructor/courses/${courseId}`);
 
   let course;
@@ -77,13 +78,11 @@ async function CourseEditorContent({ courseId }: { courseId: string }) {
   return <CourseEditorWorkspace initialCourse={initialCourse} />;
 }
 
-export default async function InstructorCourseEditorPage({ params }: CourseEditorPageProps) {
-  const { courseId } = await params;
-
+export default function InstructorCourseEditorPage({ params }: CourseEditorPageProps) {
   return (
     <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10">
       <Suspense fallback={<div className="text-sm text-muted-foreground">Loading editor...</div>}>
-        <CourseEditorContent courseId={courseId} />
+        <CourseEditorContent params={params} />
       </Suspense>
     </main>
   );

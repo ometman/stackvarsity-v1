@@ -18,6 +18,8 @@ interface CourseDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const instant = false;
+
 export async function generateStaticParams() {
   try {
     const slugs = await listPublicCourseSlugs();

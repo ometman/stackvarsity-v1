@@ -17,7 +17,8 @@ interface LearnCourseEntryProps {
   params: Promise<{ courseSlug: string }>;
 }
 
-async function LearnCourseEntryContent({ courseSlug }: { courseSlug: string }) {
+async function LearnCourseEntryContent({ params }: LearnCourseEntryProps) {
+  const { courseSlug } = await params;
   const session = await requirePageRole(["STUDENT", "INSTRUCTOR", "ADMIN"], `/learn/${courseSlug}`);
 
   let target;
@@ -63,12 +64,11 @@ async function LearnCourseEntryContent({ courseSlug }: { courseSlug: string }) {
   redirect(`/learn/${target.courseSlug}/${target.targetLessonSlug}`);
 }
 
-export default async function LearnCourseEntryPage({ params }: LearnCourseEntryProps) {
-  const { courseSlug } = await params;
+export default function LearnCourseEntryPage({ params }: LearnCourseEntryProps) {
   return (
     <main className="mx-auto flex w-full max-w-5xl flex-1 items-center justify-center px-4 py-12">
       <Suspense fallback={<div className="text-sm text-muted-foreground">Opening course...</div>}>
-        <LearnCourseEntryContent courseSlug={courseSlug} />
+        <LearnCourseEntryContent params={params} />
       </Suspense>
     </main>
   );
