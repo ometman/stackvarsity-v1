@@ -9,6 +9,18 @@ const notFoundMock = vi.fn(() => {
 
 vi.mock("next/navigation", () => ({
   notFound: () => notFoundMock(),
+  useRouter: () => ({
+    push: vi.fn(),
+    refresh: vi.fn(),
+  }),
+}));
+
+vi.mock("@/modules/auth/server-auth", () => ({
+  getCurrentSession: vi.fn().mockResolvedValue(null),
+}));
+
+vi.mock("@/modules/enrollments/services/enrollment-service", () => ({
+  getUserEnrollmentForCourse: vi.fn().mockResolvedValue(null),
 }));
 
 vi.mock("@/modules/catalog/services/catalog-service", async () => {
