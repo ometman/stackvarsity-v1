@@ -2,6 +2,15 @@ import { describe, expect, it, vi } from "vitest";
 import robots from "@/app/robots";
 import sitemap from "@/app/sitemap";
 
+vi.mock("@/modules/certification/services/certification-service", async () => {
+  const { SEED_CERTIFICATION_TRACKS } = await import(
+    "@/modules/certification/data/seed-fixtures"
+  );
+  return {
+    listCertificationSlugs: async () => SEED_CERTIFICATION_TRACKS.map((t) => t.track.slug),
+  };
+});
+
 vi.mock("@/modules/catalog/services/catalog-service", async () => {
   const { ProvisionalCourseCatalogRepository } =
     await import("@/modules/catalog/repositories/course-repository");

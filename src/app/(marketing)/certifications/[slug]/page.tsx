@@ -1,4 +1,11 @@
-import { ArrowLeft, ArrowRight, CheckCircle2, ChevronRight, ShieldAlert } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  CheckCircle2,
+  ChevronRight,
+  ExternalLink,
+  ShieldAlert,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -96,12 +103,14 @@ export default async function CertificationDetailPage({ params }: CertificationD
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary">{track.issuer}</Badge>
               <Badge variant="outline">{track.availability}</Badge>
+              {track.examCode ? <Badge variant="outline">Exam: {track.examCode}</Badge> : null}
             </div>
             <h1 className="mt-4 text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
               {track.title}
             </h1>
             <p className="mt-2 text-sm font-medium text-muted-foreground">
               Target external exam: {track.targetCertification}
+              {track.versionLabel ? ` · ${track.versionLabel}` : ""}
             </p>
             <p className="mt-4 text-base leading-7 text-muted-foreground">{track.overview}</p>
           </div>
@@ -111,13 +120,26 @@ export default async function CertificationDetailPage({ params }: CertificationD
             className="flex items-start gap-3 rounded-lg border border-border bg-muted/40 p-4 text-sm text-muted-foreground"
           >
             <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-foreground" aria-hidden="true" />
-            <p>{track.disclaimer}</p>
+            <div className="space-y-1">
+              <p>{track.disclaimer}</p>
+              {track.trademarkNotice ? (
+                <p className="text-xs text-muted-foreground">{track.trademarkNotice}</p>
+              ) : null}
+            </div>
           </div>
 
           <section aria-labelledby="topics-heading">
-            <h2 id="topics-heading" className="text-xl font-semibold text-foreground">
-              Preparation focus areas
-            </h2>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 id="topics-heading" className="text-xl font-semibold text-foreground">
+                Exam domains &amp; objective overview
+              </h2>
+              <Link
+                href={`/certifications/${track.slug}/objectives`}
+                className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
+              >
+                Full objective outline →
+              </Link>
+            </div>
             <ul className="mt-4 space-y-3">
               {track.preparationTopics.map((topic) => (
                 <li key={topic} className="flex items-start gap-2.5 text-sm leading-6">
@@ -160,9 +182,17 @@ export default async function CertificationDetailPage({ params }: CertificationD
           </section>
 
           <section aria-labelledby="pathway-heading">
-            <h2 id="pathway-heading" className="text-xl font-semibold text-foreground">
-              Learning pathway
-            </h2>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 id="pathway-heading" className="text-xl font-semibold text-foreground">
+                Learning pathway
+              </h2>
+              <Link
+                href={`/certifications/${track.slug}/study-guide`}
+                className="text-sm font-medium text-foreground underline-offset-4 hover:underline"
+              >
+                Public study guide →
+              </Link>
+            </div>
             <ol className="mt-4 space-y-2">
               {track.learningPathway.map((step, index) => (
                 <li
@@ -195,29 +225,49 @@ export default async function CertificationDetailPage({ params }: CertificationD
                   <dd className="font-medium text-foreground">{track.level}</dd>
                 </div>
                 <div className="flex justify-between gap-2 border-b border-border pb-2">
-                  <dt className="text-muted-foreground">Status</dt>
+                  <dt className="text-muted-foreground">Access</dt>
                   <dd className="font-medium text-foreground">{track.availability}</dd>
                 </div>
+                {track.lastReviewedAt ? (
+                  <div className="flex justify-between gap-2 border-b border-border pb-2">
+                    <dt className="text-muted-foreground">Last reviewed</dt>
+                    <dd className="font-medium text-foreground">
+                      {track.lastReviewedAt.slice(0, 10)}
+                    </dd>
+                  </div>
+                ) : null}
               </dl>
+
+              {track.sourceUrl ? (
+                <a
+                  href={track.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs font-medium text-foreground underline-offset-4 hover:underline"
+                >
+                  Official provider exam overview
+                  <ExternalLink className="h-3 w-3" aria-hidden="true" />
+                </a>
+              ) : null}
 
               <p className="text-xs leading-5 text-muted-foreground">
                 Exam registration and official credentials are handled directly by {track.issuer}.
-                Timed mock exams on Stack Varsity are scheduled for an upcoming release.
+                Timed mock exams on Stack Varsity are scheduled for Phase 6.
               </p>
 
               <div className="flex flex-col gap-2.5 pt-2">
                 <Link
-                  href="/register"
+                  href={`/student/certifications/${track.id}`}
                   className="inline-flex h-10 items-center justify-center gap-1.5 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90"
                 >
-                  Create free account
+                  Start preparation track
                   <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
                 <Link
-                  href="/contact"
+                  href="/register"
                   className="inline-flex h-10 items-center justify-center rounded-md border border-border bg-background px-4 text-sm font-medium text-foreground hover:bg-accent"
                 >
-                  Ask a question
+                  Create free account
                 </Link>
               </div>
             </CardContent>

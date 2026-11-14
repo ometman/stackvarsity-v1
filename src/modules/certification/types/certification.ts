@@ -1,6 +1,23 @@
-export type CertificationIssuer = "Amazon Web Services (AWS)" | "CompTIA" | "Microsoft";
+export type CertificationIssuer = string;
 
-export type CertificationLevel = "Foundational" | "Associate";
+export type CertificationLevel = string;
+
+export interface CertificationDomainObjectiveSummary {
+  id: string;
+  objectiveKey: string;
+  title: string;
+  summary: string | null;
+}
+
+export interface CertificationDomainSummary {
+  id: string;
+  domainKey: string;
+  title: string;
+  description: string | null;
+  weightMinPercent: number | null;
+  weightMaxPercent: number | null;
+  objectives: CertificationDomainObjectiveSummary[];
+}
 
 export interface CertificationTrackSummary {
   id: string;
@@ -10,8 +27,11 @@ export interface CertificationTrackSummary {
   issuer: CertificationIssuer;
   level: CertificationLevel;
   summary: string;
-  availability: "Preview / Upcoming";
-  isProvisional: true;
+  availability: string;
+  isProvisional: boolean;
+  examCode?: string;
+  versionLabel?: string;
+  accessType?: "FREE" | "PAID";
 }
 
 export interface CertificationTrackDetail extends CertificationTrackSummary {
@@ -22,4 +42,9 @@ export interface CertificationTrackDetail extends CertificationTrackSummary {
   learningPathway: readonly string[];
   relatedCourseSlug?: string;
   disclaimer: string;
+  sourceUrl?: string | null;
+  verifiedAt?: string | null;
+  lastReviewedAt?: string | null;
+  trademarkNotice?: string | null;
+  domains?: readonly CertificationDomainSummary[];
 }

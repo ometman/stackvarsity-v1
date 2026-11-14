@@ -6,6 +6,58 @@ import CertificationDetailPage, {
 } from "@/app/(marketing)/certifications/[slug]/page";
 import CertificationsPage from "@/app/(marketing)/certifications/page";
 
+vi.mock("@/modules/certification/services/certification-service", async () => {
+  const { SEED_CERTIFICATION_TRACKS } = await import(
+    "@/modules/certification/data/seed-fixtures"
+  );
+  const mapped = SEED_CERTIFICATION_TRACKS.map((item, idx) => ({
+    id: `track-${idx + 1}`,
+    slug: item.track.slug,
+    title: item.track.title,
+    targetCertification: `${item.certification.name} (${item.examVersion.examCode})`,
+    issuer: item.provider.name,
+    level: item.certification.level,
+    summary: item.track.summary,
+    overview: item.track.overview,
+    availability: "Free Preparation Track",
+    isProvisional: false,
+    examCode: item.examVersion.examCode,
+    versionLabel: item.examVersion.versionLabel,
+    accessType: "FREE" as const,
+    audience: item.track.intendedAudience,
+    prerequisites: item.track.prerequisites,
+    preparationTopics: item.domains.map((d) => d.title),
+    learningPathway: ["Review domains", "Complete mapped lessons", "Practice formative items"],
+    relatedCourseSlug: item.track.relatedCourseSlug,
+    disclaimer: item.track.disclaimer,
+    sourceUrl: item.examVersion.sourceUrl,
+    verifiedAt: "2026-11-14T00:00:00.000Z",
+    lastReviewedAt: "2026-11-14T00:00:00.000Z",
+    trademarkNotice: item.provider.trademarkNotice,
+    domains: item.domains.map((d, dIdx) => ({
+      id: `dom-${dIdx}`,
+      domainKey: d.domainKey,
+      title: d.title,
+      description: d.description,
+      weightMinPercent: null,
+      weightMaxPercent: null,
+      objectives: d.objectives.map((o, oIdx) => ({
+        id: `obj-${oIdx}`,
+        objectiveKey: o.objectiveKey,
+        title: o.title,
+        summary: o.summary,
+      })),
+    })),
+  }));
+
+  return {
+    listCertificationTracks: async () => mapped,
+    getCertificationTrackBySlug: async (slug: string) =>
+      mapped.find((t) => t.slug === slug) ?? null,
+    listCertificationSlugs: async () => mapped.map((t) => t.slug),
+  };
+});
+
 const notFoundMock = vi.fn(() => {
   throw new Error("NEXT_NOT_FOUND");
 });

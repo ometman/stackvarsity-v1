@@ -6,9 +6,13 @@ export const certificationFilterSchema = z.object({
   issuer: z
     .string()
     .optional()
-    .transform((val) =>
-      val && (CERTIFICATION_ISSUERS as readonly string[]).includes(val)
-        ? (val as (typeof CERTIFICATION_ISSUERS)[number])
-        : "all"
-    ),
+    .transform((val) => (val && val.trim() && val !== "all" ? val.trim() : "all")),
+  level: z
+    .string()
+    .optional()
+    .transform((val) => (val && val.trim() && val !== "all" ? val.trim() : "all")),
+  q: z
+    .string()
+    .optional()
+    .transform((val) => (val ? val.trim().slice(0, 120) : "")),
 });
