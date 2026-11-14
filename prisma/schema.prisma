@@ -107,6 +107,10 @@ model User {
   grantedEnrollments      Enrollment[]             @relation("EnrollmentGranter")
   lessonProgress          LessonProgress[]
   courseProgress          CourseProgress[]
+  createdTracks           PreparationTrack[]             @relation("TrackCreator")
+  trackAssignments        TrackAssignment[]              @relation("AssignedTrackStaff")
+  grantedTrackAssignments TrackAssignment[]              @relation("TrackAssignmentGranter")
+  trackEnrollments        LearnerPreparationEnrollment[] @relation("LearnerTrackEnrollment")
 
   @@index([role])
   @@index([status])
@@ -270,7 +274,8 @@ model Course {
   modules        CourseModule[]
   enrollments    Enrollment[]
   lessonProgress LessonProgress[]
-  courseProgress CourseProgress[]
+  courseProgress    CourseProgress[]
+  objectiveMappings ObjectiveResourceMapping[]
 
   @@index([status])
   @@index([category])
@@ -333,6 +338,7 @@ model Lesson {
   resources          LessonResource[]
   lessonProgress     LessonProgress[]
   lastViewedProgress CourseProgress[]
+  objectiveMappings  ObjectiveResourceMapping[]
 
   @@unique([moduleId, slug])
   @@index([moduleId, position])
@@ -417,4 +423,251 @@ model CourseProgress {
   @@unique([userId, courseId])
   @@index([userId])
   @@map("course_progress")
+}
+
+// ============================================================================
+// Phase 5 — Professional Certification Preparation
+// ============================================================================
+
+/// Publication lifecycle for certification exam versions, tracks, and practice items.
+enum CertificationLifecycleStatus {
+  DRAFT
+  IN_REVIEW
+  PUBLISHED
+  RETIRED
+}
+
+/// Verification status for external certification blueprint source references.
+enum SourceVerificationStatus {
+  VERIFIED
+  NEEDS_REVERIFICATION
+  UNVERIFIED
+}
+
+/// Descriptive access tier for preparation tracks (paid checkout deferred to Phase 7).
+enum TrackAccessType {
+  FREE
+  PAID
+}
+
+/// Scoped editorial assignment role for a preparation track.
+enum TrackAssignmentRole {
+  AUTHOR
+  REVIEWER
+}
+
+/// Lifecycle state for a learner's certification preparation track enrollment.
+enum TrackEnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  PAUSED
+  ARCHIVED
+}
+
+/// External organization that awards a professional certification.
+model CertificationProvider {
+  id                  String   @id @default(cuid())
+  slug                String   @unique
+  name                String
+  officialHomepageUrl String?  @map("official_homepage_url")
+  trademarkNotice     String?  @map("trademark_notice") @db.Text
+  isActive            Boolean  @default(true) @map("is_active")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  certifications Certification[]
+
+  @@index([isActive])
+  @@map("certification_providers")
+}
+
+/// Professional credential or pathway associated with a provider.
+model Certification {
+  id         String   @id @default(cuid())
+  providerId String   @map("provider_id")
+  slug       String   @unique
+  name       String
+  level      String
+  summary    String   @db.Text
+  isActive   Boolean  @default(true) @map("is_active")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  provider     CertificationProvider @relation(fields: [providerId], references: [id], onDelete: Restrict)
+  examVersions ExamVersion[]
+
+  @@index([providerId])
+  @@index([isActive])
+  @@map("certifications")
+}
+
+/// Versioned exam blueprint with explicit source provenance and verification status.
+model ExamVersion {
+  id                 String                       @id @default(cuid())
+  certificationId    String                       @map("certification_id")
+  examCode           String                       @map("exam_code")
+  versionLabel       String                       @map("version_label")
+  status             CertificationLifecycleStatus @default(DRAFT)
+  effectiveFrom      DateTime?                    @map("effective_from")
+  retiredAt          DateTime?                    @map("retired_at")
+  sourceUrl          String?                      @map("source_url")
+  verifiedAt         DateTime?                    @map("verified_at")
+  verificationStatus SourceVerificationStatus     @default(NEEDS_REVERIFICATION) @map("verification_status")
+  sourceNotes        String?                      @map("source_notes") @db.Text
+  revision           Int                          @default(1)
+  createdAt          DateTime                     @default(now()) @map("created_at")
+  updatedAt          DateTime                     @updatedAt @map("updated_at")
+
+  certification Certification      @relation(fields: [certificationId], references: [id], onDelete: Restrict)
+  domains       ExamDomain[]
+  objectives    ExamObjective[]
+  tracks        PreparationTrack[]
+
+  @@unique([certificationId, examCode, versionLabel])
+  @@index([certificationId, status])
+  @@map("exam_versions")
+}
+
+/// Weighted knowledge domain within an exam blueprint version.
+model ExamDomain {
+  id               String   @id @default(cuid())
+  examVersionId    String   @map("exam_version_id")
+  domainKey        String   @map("domain_key")
+  title            String
+  description      String?  @db.Text
+  weightMinPercent Int?     @map("weight_min_percent")
+  weightMaxPercent Int?     @map("weight_max_percent")
+  position         Int
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  examVersion ExamVersion     @relation(fields: [examVersionId], references: [id], onDelete: Cascade)
+  objectives  ExamObjective[]
+
+  @@unique([examVersionId, domainKey])
+  @@index([examVersionId, position])
+  @@map("exam_domains")
+}
+
+/// Fine-grained exam objective within a domain, supporting optional parent-child hierarchy.
+model ExamObjective {
+  id              String   @id @default(cuid())
+  examVersionId   String   @map("exam_version_id")
+  domainId        String   @map("domain_id")
+  parentId        String?  @map("parent_id")
+  objectiveKey    String   @map("objective_key")
+  title           String
+  summary         String?  @db.Text
+  sourceReference String?  @map("source_reference")
+  position        Int
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  examVersion      ExamVersion                @relation(fields: [examVersionId], references: [id], onDelete: Cascade)
+  domain           ExamDomain                 @relation(fields: [domainId], references: [id], onDelete: Cascade)
+  parent           ExamObjective?             @relation("ObjectiveHierarchy", fields: [parentId], references: [id], onDelete: SetNull)
+  children         ExamObjective[]            @relation("ObjectiveHierarchy")
+  resourceMappings ObjectiveResourceMapping[]
+
+  @@unique([examVersionId, objectiveKey])
+  @@index([domainId, position])
+  @@index([parentId])
+  @@map("exam_objectives")
+}
+
+/// Stack Varsity's preparation offering bound to a specific exam version.
+model PreparationTrack {
+  id               String                       @id @default(cuid())
+  examVersionId    String                       @map("exam_version_id")
+  slug             String                       @unique
+  title            String
+  summary          String
+  overview         String                       @db.Text
+  accessType       TrackAccessType              @default(FREE) @map("access_type")
+  status           CertificationLifecycleStatus @default(DRAFT)
+  intendedAudience String[]                     @default([]) @map("intended_audience")
+  prerequisites    String[]                     @default([])
+  disclaimer       String                       @db.Text
+  revision         Int                          @default(1)
+  publishedAt      DateTime?                    @map("published_at")
+  retiredAt        DateTime?                    @map("retired_at")
+  archivedAt       DateTime?                    @map("archived_at")
+  lastReviewedAt   DateTime?                    @map("last_reviewed_at")
+  createdById      String                       @map("created_by_id")
+  createdAt        DateTime                     @default(now()) @map("created_at")
+  updatedAt        DateTime                     @updatedAt @map("updated_at")
+
+  examVersion      ExamVersion                    @relation(fields: [examVersionId], references: [id], onDelete: Restrict)
+  createdBy        User                           @relation("TrackCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  assignments      TrackAssignment[]
+  resourceMappings ObjectiveResourceMapping[]
+  enrollments      LearnerPreparationEnrollment[]
+
+  @@index([status, archivedAt])
+  @@index([examVersionId])
+  @@index([createdById])
+  @@map("preparation_tracks")
+}
+
+/// Explicit assignment scoping which instructors/reviewers may author or review a track.
+model TrackAssignment {
+  id           String              @id @default(cuid())
+  trackId      String              @map("track_id")
+  userId       String              @map("user_id")
+  role         TrackAssignmentRole @default(AUTHOR)
+  assignedById String?             @map("assigned_by_id")
+  assignedAt   DateTime            @default(now()) @map("assigned_at")
+
+  track      PreparationTrack @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  user       User             @relation("AssignedTrackStaff", fields: [userId], references: [id], onDelete: Cascade)
+  assignedBy User?            @relation("TrackAssignmentGranter", fields: [assignedById], references: [id], onDelete: SetNull)
+
+  @@unique([trackId, userId, role])
+  @@index([userId])
+  @@map("track_assignments")
+}
+
+/// Explicit mapping between an exam objective and an LMS course or lesson.
+model ObjectiveResourceMapping {
+  id          String   @id @default(cuid())
+  trackId     String   @map("track_id")
+  objectiveId String   @map("objective_id")
+  courseId    String?  @map("course_id")
+  lessonId    String?  @map("lesson_id")
+  isRequired  Boolean  @default(true) @map("is_required")
+  position    Int
+  notes       String?
+  isStale     Boolean  @default(false) @map("is_stale")
+  staleReason String?  @map("stale_reason")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  track     PreparationTrack @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  objective ExamObjective    @relation(fields: [objectiveId], references: [id], onDelete: Cascade)
+  course    Course?          @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  lesson    Lesson?          @relation(fields: [lessonId], references: [id], onDelete: SetNull)
+
+  @@index([trackId, objectiveId, position])
+  @@index([courseId])
+  @@index([lessonId])
+  @@map("objective_resource_mappings")
+}
+
+/// Learner's authorized participation in a certification preparation track.
+model LearnerPreparationEnrollment {
+  id          String                @id @default(cuid())
+  userId      String                @map("user_id")
+  trackId     String                @map("track_id")
+  status      TrackEnrollmentStatus @default(ACTIVE)
+  enrolledAt  DateTime              @default(now()) @map("enrolled_at")
+  completedAt DateTime?             @map("completed_at")
+  updatedAt   DateTime              @updatedAt @map("updated_at")
+
+  user  User             @relation("LearnerTrackEnrollment", fields: [userId], references: [id], onDelete: Cascade)
+  track PreparationTrack @relation(fields: [trackId], references: [id], onDelete: Restrict)
+
+  @@unique([userId, trackId])
+  @@index([userId, status])
+  @@index([trackId])
+  @@map("learner_preparation_enrollments")
 }

@@ -2,6 +2,7 @@ import { existsSync } from "node:fs";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { PrismaClient } from "../src/generated/prisma/client";
+import { SEED_CERTIFICATION_TRACKS } from "../src/modules/certification/data/seed-fixtures";
 
 if (existsSync(".env.local")) {
   process.loadEnvFile(".env.local");
@@ -328,6 +329,160 @@ async function main() {
   }
 
   console.log(`Seeded ${SEED_COURSES.length} development LMS courses.`);
+
+  for (const item of SEED_CERTIFICATION_TRACKS) {
+    const provider = await prisma.certificationProvider.upsert({
+      where: { slug: item.provider.slug },
+      update: {},
+      create: {
+        slug: item.provider.slug,
+        name: item.provider.name,
+        officialHomepageUrl: item.provider.officialHomepageUrl,
+        trademarkNotice: item.provider.trademarkNotice,
+        isActive: true,
+      },
+    });
+
+    const certification = await prisma.certification.upsert({
+      where: { slug: item.certification.slug },
+      update: {},
+      create: {
+        providerId: provider.id,
+        slug: item.certification.slug,
+        name: item.certification.name,
+        level: item.certification.level,
+        summary: item.certification.summary,
+        isActive: true,
+      },
+    });
+
+    const examVersion = await prisma.examVersion.upsert({
+      where: {
+        certificationId_examCode_versionLabel: {
+          certificationId: certification.id,
+          examCode: item.examVersion.examCode,
+          versionLabel: item.examVersion.versionLabel,
+        },
+      },
+      update: {},
+      create: {
+        certificationId: certification.id,
+        examCode: item.examVersion.examCode,
+        versionLabel: item.examVersion.versionLabel,
+        status: "PUBLISHED",
+        sourceUrl: item.examVersion.sourceUrl,
+        verifiedAt: new Date("2026-11-14T00:00:00.000Z"),
+        verificationStatus: "VERIFIED",
+        sourceNotes: item.examVersion.sourceNotes,
+      },
+    });
+
+    const existingTrack = await prisma.preparationTrack.findUnique({
+      where: { slug: item.track.slug },
+      select: { id: true },
+    });
+
+    const track =
+      existingTrack ??
+      (await prisma.preparationTrack.create({
+        data: {
+          examVersionId: examVersion.id,
+          slug: item.track.slug,
+          title: item.track.title,
+          summary: item.track.summary,
+          overview: item.track.overview,
+          accessType: "FREE",
+          status: "PUBLISHED",
+          intendedAudience: item.track.intendedAudience,
+          prerequisites: item.track.prerequisites,
+          disclaimer: item.track.disclaimer,
+          publishedAt: new Date(),
+          lastReviewedAt: new Date(),
+          createdById: demoInstructor.id,
+        },
+      }));
+
+    await prisma.trackAssignment.upsert({
+      where: {
+        trackId_userId_role: {
+          trackId: track.id,
+          userId: demoInstructor.id,
+          role: "AUTHOR",
+        },
+      },
+      update: {},
+      create: {
+        trackId: track.id,
+        userId: demoInstructor.id,
+        role: "AUTHOR",
+        assignedById: demoInstructor.id,
+      },
+    });
+
+    const existingDomains = await prisma.examDomain.count({
+      where: { examVersionId: examVersion.id },
+    });
+
+    let firstObjectiveId: string | null = null;
+    if (existingDomains === 0) {
+      for (const dom of item.domains) {
+        const domain = await prisma.examDomain.create({
+          data: {
+            examVersionId: examVersion.id,
+            domainKey: dom.domainKey,
+            title: dom.title,
+            description: dom.description,
+            weightMinPercent: dom.weightMinPercent ?? null,
+            weightMaxPercent: dom.weightMaxPercent ?? null,
+            position: dom.position,
+          },
+        });
+
+        for (const obj of dom.objectives) {
+          const createdObj = await prisma.examObjective.create({
+            data: {
+              examVersionId: examVersion.id,
+              domainId: domain.id,
+              objectiveKey: obj.objectiveKey,
+              title: obj.title,
+              summary: obj.summary,
+              sourceReference: obj.sourceReference,
+              position: obj.position,
+            },
+          });
+          if (!firstObjectiveId) {
+            firstObjectiveId = createdObj.id;
+          }
+        }
+      }
+    }
+
+    if (firstObjectiveId && item.track.relatedCourseSlug) {
+      const relatedCourse = await prisma.course.findUnique({
+        where: { slug: item.track.relatedCourseSlug },
+        select: { id: true },
+      });
+      if (relatedCourse) {
+        const existingMapCount = await prisma.objectiveResourceMapping.count({
+          where: { trackId: track.id, courseId: relatedCourse.id },
+        });
+        if (existingMapCount === 0) {
+          await prisma.objectiveResourceMapping.create({
+            data: {
+              trackId: track.id,
+              objectiveId: firstObjectiveId,
+              courseId: relatedCourse.id,
+              isRequired: true,
+              position: 1,
+              notes: "Foundational course aligned to this certification track.",
+            },
+          });
+        }
+      }
+    }
+  }
+
+  console.log(`Seeded ${SEED_CERTIFICATION_TRACKS.length} certification preparation tracks.`);
 }
 
 main()
