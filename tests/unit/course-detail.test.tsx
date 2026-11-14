@@ -9,7 +9,29 @@ const notFoundMock = vi.fn(() => {
 
 vi.mock("next/navigation", () => ({
   notFound: () => notFoundMock(),
+  useRouter: () => ({
+    push: vi.fn(),
+    refresh: vi.fn(),
+  }),
 }));
+
+vi.mock("@/modules/auth/server-auth", () => ({
+  getCurrentSession: vi.fn().mockResolvedValue(null),
+}));
+
+vi.mock("@/modules/enrollments/services/enrollment-service", () => ({
+  getUserEnrollmentForCourse: vi.fn().mockResolvedValue(null),
+}));
+
+vi.mock("@/modules/catalog/services/catalog-service", async () => {
+  const { ProvisionalCourseCatalogRepository } =
+    await import("@/modules/catalog/repositories/course-repository");
+  const repo = new ProvisionalCourseCatalogRepository();
+  return {
+    getPublicCourseBySlug: (slug: string) => repo.findBySlug(slug),
+    listPublicCourseSlugs: async () => (await repo.listAll()).map((c) => c.slug),
+  };
+});
 
 describe("Public course detail page", () => {
   it("renders course details, learning outcomes, and registration CTA for a valid slug", async () => {

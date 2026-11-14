@@ -2,21 +2,31 @@ import { ArrowLeft, ArrowRight, CheckCircle2, ChevronRight } from "lucide-react"
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { buildBreadcrumbJsonLd, serializeJsonLd } from "@/lib/seo/structured-data";
+import { getCurrentSession } from "@/modules/auth/server-auth";
 import {
   getPublicCourseBySlug,
   listPublicCourseSlugs,
 } from "@/modules/catalog/services/catalog-service";
+import { CourseEnrollmentCta } from "@/modules/enrollments/components/course-enrollment-cta";
+import { getUserEnrollmentForCourse } from "@/modules/enrollments/services/enrollment-service";
 
 interface CourseDetailPageProps {
   params: Promise<{ slug: string }>;
 }
 
+export const instant = false;
+
 export async function generateStaticParams() {
-  const slugs = await listPublicCourseSlugs();
-  return slugs.map((slug) => ({ slug }));
+  try {
+    const slugs = await listPublicCourseSlugs();
+    return slugs.map((slug) => ({ slug }));
+  } catch {
+    return [];
+  }
 }
 
 export async function generateMetadata({ params }: CourseDetailPageProps): Promise<Metadata> {
@@ -42,6 +52,31 @@ export async function generateMetadata({ params }: CourseDetailPageProps): Promi
       type: "article",
     },
   };
+}
+
+async function CourseEnrollmentCtaLoader({
+  courseId,
+  courseSlug,
+  accessType,
+}: {
+  courseId: string;
+  courseSlug: string;
+  accessType?: "FREE" | "PAID";
+}) {
+  const session = await getCurrentSession();
+  const enrollment = session ? await getUserEnrollmentForCourse(session.user.id, courseId) : null;
+  const isEnrolled =
+    enrollment !== null && (enrollment.status === "ACTIVE" || enrollment.status === "COMPLETED");
+
+  return (
+    <CourseEnrollmentCta
+      courseId={courseId}
+      courseSlug={courseSlug}
+      accessType={accessType}
+      isAuthenticated={session !== null}
+      isEnrolled={isEnrolled}
+    />
+  );
 }
 
 export default async function CourseDetailPage({ params }: CourseDetailPageProps) {
@@ -193,25 +228,28 @@ export default async function CourseDetailPage({ params }: CourseDetailPageProps
               </dl>
 
               <p className="text-xs leading-5 text-muted-foreground">
-                This course is currently in preview. Paid enrollment and interactive lessons will
-                open in an upcoming release.
+                {course.accessType === "PAID"
+                  ? "Paid enrollment will open in an upcoming release."
+                  : "Free self-paced access with persisted lesson progress."}
               </p>
 
-              <div className="flex flex-col gap-2.5 pt-2">
-                <Link
-                  href="/register"
-                  className="inline-flex h-10 items-center justify-center gap-1.5 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground hover:opacity-90"
-                >
-                  Create free account
-                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                </Link>
-                <Link
-                  href="/login"
-                  className="inline-flex h-10 items-center justify-center rounded-md border border-border bg-background px-4 text-sm font-medium text-foreground hover:bg-accent"
-                >
-                  Sign in
-                </Link>
-              </div>
+              <Suspense
+                fallback={
+                  <CourseEnrollmentCta
+                    courseId={course.id}
+                    courseSlug={course.slug}
+                    accessType={course.accessType}
+                    isAuthenticated={false}
+                    isEnrolled={false}
+                  />
+                }
+              >
+                <CourseEnrollmentCtaLoader
+                  courseId={course.id}
+                  courseSlug={course.slug}
+                  accessType={course.accessType}
+                />
+              </Suspense>
             </CardContent>
           </Card>
 

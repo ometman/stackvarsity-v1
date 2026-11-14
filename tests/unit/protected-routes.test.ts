@@ -32,6 +32,9 @@ vi.mock("@/server/db", () => ({
     user: {
       findFirst: mockUserFindFirst,
     },
+    course: {
+      findMany: vi.fn().mockResolvedValue([]),
+    },
     securityAuditEvent: {
       findMany: mockAuditFindMany,
       create: mockAuditCreate,

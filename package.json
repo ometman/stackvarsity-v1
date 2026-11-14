@@ -16,6 +16,7 @@
     "db:migrate": "prisma migrate dev",
     "db:migrate:status": "prisma migrate status",
     "db:validate": "prisma validate",
+    "db:seed": "jiti prisma/seed.ts",
     "db:studio": "prisma studio",
     "test": "vitest run",
     "test:unit": "vitest run tests/unit",

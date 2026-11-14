@@ -1,3 +1,4 @@
+import { PrismaCourseCatalogRepository } from "@/modules/catalog/repositories/prisma-course-repository";
 import type { PublicCourseDetail } from "@/modules/catalog/types/course";
 
 /**
@@ -233,4 +234,4 @@ export class ProvisionalCourseCatalogRepository implements CourseCatalogReposito
 }
 
 export const defaultCourseCatalogRepository: CourseCatalogRepository =
-  new ProvisionalCourseCatalogRepository();
+  new PrismaCourseCatalogRepository();

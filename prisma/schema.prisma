@@ -28,6 +28,42 @@ enum AuditOutcome {
   DENIED
 }
 
+/// Finite publication lifecycle for LMS courses.
+enum CourseStatus {
+  DRAFT
+  IN_REVIEW
+  APPROVED
+  PUBLISHED
+  ARCHIVED
+}
+
+/// Access tier for course enrollment (PAID gated until Phase 7).
+enum CourseAccessType {
+  FREE
+  PAID
+}
+
+/// Supported Phase 4 lesson content formats.
+enum LessonType {
+  TEXT
+  VIDEO
+  RESOURCE
+}
+
+/// Lifecycle state for a learner's course enrollment.
+enum EnrollmentStatus {
+  ACTIVE
+  COMPLETED
+  REVOKED
+}
+
+/// Origin of a learner's course enrollment entitlement.
+enum EnrollmentSource {
+  FREE
+  ADMIN_GRANTED
+  PAID
+}
+
 /// Minimal health-check model to verify PostgreSQL connectivity and migrations.
 model SystemHealthCheck {
   id        String   @id @default(cuid())
@@ -64,6 +100,13 @@ model User {
   targetedAuditEvents     SecurityAuditEvent[]     @relation("AuditTarget")
   mfaFactor               AdminMfaFactor?
   mfaRecoveryCodes        MfaRecoveryCode[]
+  createdCourses          Course[]                 @relation("CourseCreator")
+  instructorAssignments   InstructorAssignment[]   @relation("AssignedInstructor")
+  grantedAssignments      InstructorAssignment[]   @relation("AssignmentGranter")
+  enrollments             Enrollment[]             @relation("LearnerEnrollment")
+  grantedEnrollments      Enrollment[]             @relation("EnrollmentGranter")
+  lessonProgress          LessonProgress[]
+  courseProgress          CourseProgress[]
 
   @@index([role])
   @@index([status])
@@ -198,4 +241,180 @@ model MfaRecoveryCode {
   @@index([userId])
   @@index([userId, codeHash])
   @@map("mfa_recovery_codes")
+}
+
+/// Canonical LMS course record.
+model Course {
+  id                       String           @id @default(cuid())
+  slug                     String           @unique
+  title                    String
+  summary                  String
+  overview                 String           @db.Text
+  category                 String
+  level                    String
+  modality                 String           @default("Self-paced")
+  status                   CourseStatus     @default(DRAFT)
+  accessType               CourseAccessType @default(FREE) @map("access_type")
+  intendedAudience         String[]         @default([]) @map("intended_audience")
+  prerequisites            String[]         @default([])
+  learningOutcomes         String[]         @default([]) @map("learning_outcomes")
+  relatedCertificationSlug String?          @map("related_certification_slug")
+  publishedAt              DateTime?        @map("published_at")
+  archivedAt               DateTime?        @map("archived_at")
+  createdById              String           @map("created_by_id")
+  createdAt                DateTime         @default(now()) @map("created_at")
+  updatedAt                DateTime         @updatedAt @map("updated_at")
+
+  createdBy      User                   @relation("CourseCreator", fields: [createdById], references: [id], onDelete: Restrict)
+  assignments    InstructorAssignment[]
+  modules        CourseModule[]
+  enrollments    Enrollment[]
+  lessonProgress LessonProgress[]
+  courseProgress CourseProgress[]
+
+  @@index([status])
+  @@index([category])
+  @@index([createdById])
+  @@map("courses")
+}
+
+/// Explicit assignment scoping which instructors may author/manage a course.
+model InstructorAssignment {
+  id           String   @id @default(cuid())
+  courseId     String   @map("course_id")
+  userId       String   @map("user_id")
+  assignedById String?  @map("assigned_by_id")
+  assignedAt   DateTime @default(now()) @map("assigned_at")
+
+  course     Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  user       User   @relation("AssignedInstructor", fields: [userId], references: [id], onDelete: Cascade)
+  assignedBy User?  @relation("AssignmentGranter", fields: [assignedById], references: [id], onDelete: SetNull)
+
+  @@unique([courseId, userId])
+  @@index([userId])
+  @@map("instructor_assignments")
+}
+
+/// Ordered curriculum module/section within a course.
+model CourseModule {
+  id          String    @id @default(cuid())
+  courseId    String    @map("course_id")
+  title       String
+  description String?
+  position    Int
+  archivedAt  DateTime? @map("archived_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  course  Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons Lesson[]
+
+  @@index([courseId, position])
+  @@map("course_modules")
+}
+
+/// Ordered unit of instruction within a course module.
+model Lesson {
+  id               String     @id @default(cuid())
+  moduleId         String     @map("module_id")
+  slug             String
+  title            String
+  type             LessonType @default(TEXT)
+  content          String     @db.Text
+  videoUrl         String?    @map("video_url")
+  estimatedMinutes Int?       @map("estimated_minutes")
+  position         Int
+  isPublished      Boolean    @default(true) @map("is_published")
+  archivedAt       DateTime?  @map("archived_at")
+  createdAt        DateTime   @default(now()) @map("created_at")
+  updatedAt        DateTime   @updatedAt @map("updated_at")
+
+  module             CourseModule     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  resources          LessonResource[]
+  lessonProgress     LessonProgress[]
+  lastViewedProgress CourseProgress[]
+
+  @@unique([moduleId, slug])
+  @@index([moduleId, position])
+  @@map("lessons")
+}
+
+/// External or reference learning resource attached to a lesson.
+model LessonResource {
+  id           String   @id @default(cuid())
+  lessonId     String   @map("lesson_id")
+  title        String
+  url          String
+  resourceType String   @default("LINK") @map("resource_type")
+  position     Int
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  @@index([lessonId, position])
+  @@map("lesson_resources")
+}
+
+/// Learner's authorized enrollment in a course.
+model Enrollment {
+  id          String           @id @default(cuid())
+  userId      String           @map("user_id")
+  courseId    String           @map("course_id")
+  status      EnrollmentStatus @default(ACTIVE)
+  source      EnrollmentSource @default(FREE)
+  grantedById String?          @map("granted_by_id")
+  enrolledAt  DateTime         @default(now()) @map("enrolled_at")
+  completedAt DateTime?        @map("completed_at")
+  revokedAt   DateTime?        @map("revoked_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  user      User   @relation("LearnerEnrollment", fields: [userId], references: [id], onDelete: Cascade)
+  course    Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  grantedBy User?  @relation("EnrollmentGranter", fields: [grantedById], references: [id], onDelete: SetNull)
+
+  @@unique([userId, courseId])
+  @@index([userId, status])
+  @@index([courseId, status])
+  @@map("enrollments")
+}
+
+/// Per-user, per-lesson completion and last-viewed tracking.
+model LessonProgress {
+  id           String    @id @default(cuid())
+  userId       String    @map("user_id")
+  lessonId     String    @map("lesson_id")
+  courseId     String    @map("course_id")
+  completed    Boolean   @default(false)
+  completedAt  DateTime? @map("completed_at")
+  lastViewedAt DateTime  @default(now()) @map("last_viewed_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, lessonId])
+  @@index([userId, courseId])
+  @@map("lesson_progress")
+}
+
+/// Server-derived aggregate progress and resume pointer for a user in a course.
+model CourseProgress {
+  id               String    @id @default(cuid())
+  userId           String    @map("user_id")
+  courseId         String    @map("course_id")
+  completedLessons Int       @default(0) @map("completed_lessons")
+  totalLessons     Int       @default(0) @map("total_lessons")
+  progressPercent  Int       @default(0) @map("progress_percent")
+  lastLessonId     String?   @map("last_lesson_id")
+  completedAt      DateTime? @map("completed_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  user       User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course     Course  @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lastLesson Lesson? @relation(fields: [lastLessonId], references: [id], onDelete: SetNull)
+
+  @@unique([userId, courseId])
+  @@index([userId])
+  @@map("course_progress")
 }
