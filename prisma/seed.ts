@@ -3,6 +3,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 import { PrismaClient } from "../src/generated/prisma/client";
 import { SEED_CERTIFICATION_TRACKS } from "../src/modules/certification/data/seed-fixtures";
+import { SEED_PRACTICE_QUESTIONS } from "../src/modules/certification/data/seed-question-fixtures";
 
 if (existsSync(".env.local")) {
   process.loadEnvFile(".env.local");
@@ -483,6 +484,56 @@ async function main() {
   }
 
   console.log(`Seeded ${SEED_CERTIFICATION_TRACKS.length} certification preparation tracks.`);
+
+  for (const qItem of SEED_PRACTICE_QUESTIONS) {
+    const track = await prisma.preparationTrack.findUnique({
+      where: { slug: qItem.trackSlug },
+      select: { id: true, examVersionId: true },
+    });
+    if (!track) continue;
+
+    const objective = await prisma.examObjective.findUnique({
+      where: {
+        examVersionId_objectiveKey: {
+          examVersionId: track.examVersionId,
+          objectiveKey: qItem.objectiveKey,
+        },
+      },
+      select: { id: true },
+    });
+    if (!objective) continue;
+
+    const existingQ = await prisma.practiceQuestion.findFirst({
+      where: { trackId: track.id, stem: qItem.stem },
+      select: { id: true },
+    });
+    if (existingQ) continue;
+
+    await prisma.practiceQuestion.create({
+      data: {
+        trackId: track.id,
+        objectiveId: objective.id,
+        stem: qItem.stem,
+        explanation: qItem.explanation,
+        sourceReference: qItem.sourceReference,
+        originType: "ORIGINAL_AUTHORED",
+        licenseNote: qItem.licenseNote,
+        status: "PUBLISHED",
+        version: 1,
+        createdById: demoInstructor.id,
+        publishedAt: new Date(),
+        options: {
+          create: qItem.options.map((opt, idx) => ({
+            label: opt.label,
+            isCorrect: opt.isCorrect,
+            position: idx + 1,
+          })),
+        },
+      },
+    });
+  }
+
+  console.log(`Seeded ${SEED_PRACTICE_QUESTIONS.length} illustrative formative practice items.`);
 }
 
 main()
